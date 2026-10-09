@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import {
   DEMO_BUSINESSES,
   getDemoBusinessBySlug,
@@ -16,6 +17,11 @@ export function generateStaticParams() {
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {
+  // Guard: empty slug → generic metadata (page will call notFound())
+  if (!params.slug || params.slug.trim() === "") {
+    return { title: "Business" };
+  }
+
   const biz = getDemoBusinessBySlug(params.slug);
 
   if (!biz) {
@@ -26,8 +32,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
     };
   }
 
-  // IMPORTANT: do NOT include "| Eswatini Connect" here.
-  // The root layout's title.template appends it automatically.
+  // Note: do NOT include "| Eswatini Connect" — the layout's title.template appends it.
   const title = `${biz.name} — ${biz.category} in ${biz.location}`;
   const path = `/business/${biz.slug}`;
 
@@ -72,6 +77,11 @@ export function generateMetadata({ params }: PageProps): Metadata {
 }
 
 export default function BusinessPage({ params }: PageProps) {
+  // Reject empty or whitespace-only slugs
+  if (!params.slug || params.slug.trim() === "") {
+    notFound();
+  }
+
   const biz = getDemoBusinessBySlug(params.slug);
 
   if (biz) {
@@ -79,7 +89,6 @@ export default function BusinessPage({ params }: PageProps) {
       (b) => b.category === biz.category && b.slug !== biz.slug
     ).slice(0, 3);
 
-    // JSON-LD structured data for Google rich results
     const structuredData = {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
