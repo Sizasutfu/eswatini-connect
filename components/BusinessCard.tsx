@@ -4,8 +4,12 @@ import Link from "next/link";
 import type { Business } from "@/lib/types";
 import BusinessImage from "./BusinessImage";
 import FavouriteButton from "./FavouriteButton";
+import Highlight from "./Highlight";
+import { useBusiness } from "@/context/BusinessContext";
 
 export default function BusinessCard({ business }: { business: Business }) {
+  const { keyword } = useBusiness();
+
   return (
     <article
       className="bg-white border border-brand-line rounded-brand-lg overflow-hidden flex flex-col
@@ -45,14 +49,15 @@ export default function BusinessCard({ business }: { business: Business }) {
       {/* Body */}
       <div className="p-6 flex flex-col flex-1 gap-2">
         <span className="text-xs font-semibold text-brand-green uppercase tracking-wide dark:text-brand-gold">
-          {business.category}
+          <Highlight text={business.category} query={keyword} />
         </span>
+
         <h3 className="text-[1.08rem] font-bold text-brand-ink dark:text-night-heading">
           <Link
             href={`/business/${business.slug}`}
             className="hover:text-brand-green transition-colors dark:hover:text-brand-gold"
           >
-            {business.name}
+            <Highlight text={business.name} query={keyword} />
           </Link>
         </h3>
 
@@ -65,11 +70,11 @@ export default function BusinessCard({ business }: { business: Business }) {
             <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 0 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
-          {business.location}
+          <Highlight text={business.location} query={keyword} />
         </p>
 
         <p className="text-sm text-brand-body mb-4 line-clamp-2 flex-1 dark:text-night-text">
-          {business.shortDesc}
+          <Highlight text={business.shortDesc} query={keyword} />
         </p>
 
         <div className="flex gap-2 mt-auto">

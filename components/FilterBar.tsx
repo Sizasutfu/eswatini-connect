@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CATEGORIES, TOWNS } from "@/lib/data";
 import { useBusiness } from "@/context/BusinessContext";
+import { useDebounce } from "@/lib/useDebounce";
 
 /* Small chevron used on all custom select wrappers */
 function Chevron() {
@@ -38,6 +39,31 @@ export default function FilterBar() {
     businesses,
   } = useBusiness();
 
+  /* ---- Debounced keyword ------------------------------------------------
+     - `localKeyword` updates on every keystroke (input stays responsive)
+     - `debouncedKeyword` only updates after 300ms of no typing
+     - We push the debounced value into context, which drives filtering,
+       results count, and URL sync via FiltersUrlSync.
+  ------------------------------------------------------------------------ */
+  const [localKeyword, setLocalKeyword] = useState(keyword);
+  const debouncedKeyword = useDebounce(localKeyword, 300);
+
+  useEffect(() => {
+    if (debouncedKeyword !== keyword) {
+      setKeyword(debouncedKeyword);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedKeyword]);
+
+  /* Keep local input in sync when keyword changes from outside
+     (deep-link mount, clear filters, hero search submission). */
+  useEffect(() => {
+    if (keyword !== localKeyword && keyword !== debouncedKeyword) {
+      setLocalKeyword(keyword);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [keyword]);
+
   const [copied, setCopied] = useState(false);
 
   const hasFilters =
@@ -53,6 +79,11 @@ export default function FilterBar() {
     }
   };
 
+  const handleClear = () => {
+    setLocalKeyword("");
+    clearFilters();
+  };
+
   return (
     <>
       <div
@@ -63,7 +94,7 @@ export default function FilterBar() {
           dark:bg-night-surface dark:border-night-line dark:shadow-card"
       >
         {/* Keyword */}
-        <div className="field">
+        <div className="field relative">
           <label htmlFor="filterKeyword" className="sr-only">
             Keyword
           </label>
@@ -85,12 +116,30 @@ export default function FilterBar() {
             type="text"
             placeholder="Search by name or service…"
             autoComplete="off"
-            value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            value={localKeyword}
+            onChange={(e) => setLocalKeyword(e.target.value)}
           />
+          {localKeyword && (
+            <button
+              type="button"
+              onClick={() => setLocalKeyword("")}
+              aria-label="Clear keyword"
+              className="shrink-0 w-6 h-6 inline-flex items-center justify-center rounded-full
+                text-brand-muted hover:text-brand-ink transition-colors
+                dark:text-night-muted dark:hover:text-night-heading"
+            >
+              <svg
+                width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                aria-hidden="true"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+          )}
         </div>
 
-        {/* Category — relative wrapper holds the chevron */}
+        {/* Category */}
         <div className="field relative">
           <label htmlFor="filterCategory" className="sr-only">
             Category
@@ -134,7 +183,7 @@ export default function FilterBar() {
         <button
           type="button"
           className="btn btn-outline btn-sm w-full lg:w-auto"
-          onClick={clearFilters}
+          onClick={handleClear}
           disabled={!hasFilters}
           title={hasFilters ? "Clear all filters" : "No filters applied"}
         >
@@ -159,6 +208,15 @@ export default function FilterBar() {
                 {businesses.length}
               </strong>{" "}
               businesses
+              {keyword.trim() && (
+                <>
+                  {" "}
+                  for{" "}
+                  <span className="text-brand-ink dark:text-night-heading font-semibold">
+                    “{keyword.trim()}”
+                  </span>
+                </>
+              )}
             </>
           )}
         </div>
@@ -174,15 +232,9 @@ export default function FilterBar() {
             {copied ? (
               <>
                 <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                  strokeLinejoin="round" aria-hidden="true"
                 >
                   <path d="M20 6L9 17l-5-5" />
                 </svg>
@@ -191,15 +243,9 @@ export default function FilterBar() {
             ) : (
               <>
                 <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
+                  width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+                  strokeLinejoin="round" aria-hidden="true"
                 >
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
