@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { BusinessProvider } from "@/context/BusinessContext";
+import { FavouritesProvider } from "@/context/FavouritesContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ListBusinessModal from "@/components/ListBusinessModal";
@@ -62,10 +63,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           disableTransitionOnChange
         >
           <BusinessProvider>
-            <Header />
-            <main>{children}</main>
-            <Footer />
-            <ListBusinessModal />
+            <FavouritesProvider>
+              <Header />
+              <main>{children}</main>
+              <Footer />
+              <ListBusinessModal />
+            </FavouritesProvider>
           </BusinessProvider>
         </ThemeProvider>
       </body>

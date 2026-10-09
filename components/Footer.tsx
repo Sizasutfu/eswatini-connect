@@ -9,7 +9,8 @@ export default function Footer() {
   const { openListModal } = useBusiness();
   const year = new Date().getFullYear();
 
-  const linkCls = "text-sm text-white/70 hover:text-brand-gold transition-colors";
+  const linkCls =
+    "text-sm text-white/70 hover:text-brand-gold transition-colors";
   const headingCls = "text-sm font-semibold text-white mb-4 tracking-wide";
 
   return (
@@ -44,8 +45,8 @@ export default function Footer() {
             </span>
           </Link>
           <p className="text-sm mb-5 max-w-[320px]">
-            Discover local. Connect easily. A modern directory for Eswatini&apos;s
-            businesses and service providers.
+            Discover local. Connect easily. A modern directory for
+            Eswatini&apos;s businesses and service providers.
           </p>
           <div className="flex gap-2">
             {[
@@ -143,6 +144,11 @@ export default function Footer() {
                 className="text-sm text-brand-gold/90 hover:text-brand-gold transition-colors font-medium"
               >
                 View all →
+              </Link>
+            </li>
+            <li>
+              <Link href="/saved" className={linkCls}>
+                Saved Businesses
               </Link>
             </li>
           </ul>

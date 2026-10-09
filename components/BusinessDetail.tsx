@@ -4,6 +4,7 @@ import BusinessImage from "./BusinessImage";
 import BusinessCard from "./BusinessCard";
 import BusinessGallery from "./BusinessGallery";
 import ContactForm from "./ContactForm";
+import FavouriteButton from "./FavouriteButton";
 
 interface Props {
   business: Business;
@@ -101,6 +102,16 @@ export default function BusinessDetail({
               Your submission
             </span>
           )}
+          {/* Heart overlay on the cover, only when no "Your submission" badge */}
+          {!isLocal && (
+            <div className="absolute top-4 right-4 z-10">
+              <FavouriteButton
+                slug={b.slug}
+                businessName={b.name}
+                size="md"
+              />
+            </div>
+          )}
         </div>
 
         {/* Two-column: content + contact */}
@@ -109,9 +120,20 @@ export default function BusinessDetail({
             <p className="text-xs font-semibold text-brand-green uppercase tracking-wide mb-2 dark:text-brand-gold">
               {b.category}
             </p>
-            <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-bold tracking-tight text-brand-ink mb-4 dark:text-night-heading">
-              {b.name}
-            </h1>
+
+            {/* Title + Save button */}
+            <div className="flex flex-wrap items-start gap-4 mb-4">
+              <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-bold tracking-tight text-brand-ink flex-1 min-w-0 dark:text-night-heading">
+                {b.name}
+              </h1>
+              <div className="shrink-0 mt-2">
+                <FavouriteButton
+                  slug={b.slug}
+                  businessName={b.name}
+                  variant="text"
+                />
+              </div>
+            </div>
 
             <p className="flex items-center gap-2 text-sm text-brand-muted mb-6 dark:text-night-muted">
               <svg
