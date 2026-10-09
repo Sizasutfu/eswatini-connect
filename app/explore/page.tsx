@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import FilterBar from "@/components/FilterBar";
 import ExploreResults from "@/components/ExploreResults";
+import FiltersUrlSync from "@/components/FiltersUrlSync";
 
 export const metadata: Metadata = {
   title: "Explore Businesses — Eswatini Connect",
@@ -15,6 +17,11 @@ export default function ExplorePage() {
       id="explore"
       className="py-12 md:py-16 bg-brand-soft min-h-[calc(100vh-72px)]"
     >
+      {/* Syncs filter state ↔ URL. Renders nothing. */}
+      <Suspense fallback={null}>
+        <FiltersUrlSync />
+      </Suspense>
+
       <div className="container">
         <nav aria-label="Breadcrumb" className="mb-6 text-sm text-brand-muted">
           <Link href="/" className="hover:text-brand-green transition-colors">
