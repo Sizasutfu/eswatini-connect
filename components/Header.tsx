@@ -86,9 +86,18 @@ export default function Header() {
                 : "hidden md:flex -translate-y-3 opacity-0 md:opacity-100 invisible md:visible"
             }`}
         >
-          <Link href="/" className={navLink} onClick={closeMenu}>Home</Link>
-          <Link href="/explore" className={navLink} onClick={closeMenu}>Explore Businesses</Link>
-          <Link href="/#categories" className={navLink} onClick={closeMenu}>Categories</Link>
+          <Link href="/" className={navLink} onClick={closeMenu}>
+            Home
+          </Link>
+          <Link href="/explore" className={navLink} onClick={closeMenu}>
+            Explore Businesses
+          </Link>
+          <Link href="/map" className={navLink} onClick={closeMenu}>
+            Map
+          </Link>
+          <Link href="/#categories" className={navLink} onClick={closeMenu}>
+            Categories
+          </Link>
           <button
             type="button"
             className={`${navLink} border-b-0 md:border-0`}

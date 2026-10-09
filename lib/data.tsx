@@ -87,6 +87,17 @@ export const CATEGORIES: Category[] = [
   { name: "Agriculture & Farming", desc: "Farming supplies & services", icon: <LeafIcon /> },
 ];
 
+/* ---------- Eswatini town centers (approximate) ---------- */
+export const TOWNS = ["Manzini", "Mbabane", "Ezulwini", "Nhlangano"] as const;
+export type Town = (typeof TOWNS)[number];
+
+export const TOWN_CENTERS: Record<Town, { lat: number; lng: number }> = {
+  Manzini:   { lat: -26.4833, lng: 31.3667 },
+  Mbabane:   { lat: -26.3167, lng: 31.1333 },
+  Ezulwini:  { lat: -26.4167, lng: 31.2000 },
+  Nhlangano: { lat: -27.1167, lng: 31.2000 },
+};
+
 /* ---------- Demo businesses (fictional) ---------- */
 export const DEMO_BUSINESSES: Business[] = [
   {
@@ -95,6 +106,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "Green Valley Garden Supplies",
     category: "Agriculture & Farming",
     location: "Manzini",
+    lat: -26.4810,
+    lng: 31.3620,
     shortDesc:
       "Nursery, seeds, compost, and friendly advice for home and commercial gardens.",
     description:
@@ -121,6 +134,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "Royal Auto Care",
     category: "Automotive",
     location: "Mbabane",
+    lat: -26.3130,
+    lng: 31.1390,
     shortDesc:
       "Full-service automotive repair, diagnostics, and maintenance workshop.",
     description:
@@ -147,6 +162,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "BrightSpark Electrical Services",
     category: "Home Services",
     location: "Ezulwini",
+    lat: -26.4190,
+    lng: 31.2020,
     shortDesc:
       "Licensed electricians for installations, repairs, and safety inspections.",
     description:
@@ -173,6 +190,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "Fresh Harvest Market",
     category: "Shopping & Retail",
     location: "Nhlangano",
+    lat: -27.1150,
+    lng: 31.1980,
     shortDesc:
       "Fresh produce, pantry staples, and locally sourced goods daily.",
     description:
@@ -199,6 +218,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "TechPoint Solutions",
     category: "Technology & Electronics",
     location: "Manzini",
+    lat: -26.4880,
+    lng: 31.3720,
     shortDesc:
       "Computer repairs, networking, and IT support for homes and small business.",
     description:
@@ -225,6 +246,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "Golden Plate Kitchen",
     category: "Restaurants & Food",
     location: "Mbabane",
+    lat: -26.3210,
+    lng: 31.1280,
     shortDesc:
       "Warm, home-style cooking with a rotating daily menu and catering.",
     description:
@@ -251,6 +274,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "Bloom Beauty Studio",
     category: "Beauty & Wellness",
     location: "Ezulwini",
+    lat: -26.4140,
+    lng: 31.1960,
     shortDesc:
       "Salon and wellness studio offering hair, skin, and relaxation treatments.",
     description:
@@ -277,6 +302,8 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "ProEdge Consulting",
     category: "Professional Services",
     location: "Manzini",
+    lat: -26.4790,
+    lng: 31.3760,
     shortDesc:
       "Business advisory, bookkeeping, and compliance support for SMEs.",
     description:
@@ -299,7 +326,6 @@ export const DEMO_BUSINESSES: Business[] = [
   },
 ];
 
-export const TOWNS = ["Manzini", "Mbabane", "Ezulwini", "Nhlangano"];
 export const LS_KEY = "eswatini_connect_submissions_v1";
 
 /** Find a demo business by slug (server-safe) */
@@ -310,4 +336,13 @@ export function getDemoBusinessBySlug(slug: string): Business | undefined {
 /** All demo slugs — used for static generation */
 export function getDemoSlugs(): string[] {
   return DEMO_BUSINESSES.map((b) => b.slug);
+}
+
+/** Fallback coordinates for a town — used when a local submission has no lat/lng */
+export function getTownCenter(town: string): { lat: number; lng: number } {
+  if (town in TOWN_CENTERS) {
+    return TOWN_CENTERS[town as Town];
+  }
+  // Default to Eswatini center
+  return { lat: -26.5225, lng: 31.4659 };
 }

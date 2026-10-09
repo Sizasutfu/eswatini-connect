@@ -7,7 +7,11 @@ export interface Business {
   shortDesc: string;
   description: string;
   image: string;
-  gallery?: string[];        // ← new — optional array of photo URLs
+  gallery?: string[];
+  /** Latitude for map display */
+  lat: number;
+  /** Longitude for map display */
+  lng: number;
   featured: boolean;
   phone: string;
   whatsapp: string;

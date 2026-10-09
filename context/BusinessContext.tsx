@@ -10,16 +10,19 @@ import {
   type ReactNode,
 } from "react";
 import type { Business, SubmissionDraft } from "@/lib/types";
-import { CATEGORIES, DEMO_BUSINESSES, LS_KEY } from "@/lib/data";
+import {
+  CATEGORIES,
+  DEMO_BUSINESSES,
+  LS_KEY,
+  getTownCenter,
+} from "@/lib/data";
 import { slugify } from "@/lib/slugify";
 
 interface Ctx {
-  /* Data */
   businesses: Business[];
   filtered: Business[];
   categoryCounts: Record<string, number>;
 
-  /* Filters */
   keyword: string;
   category: string;
   location: string;
@@ -29,18 +32,15 @@ interface Ctx {
   clearFilters: () => void;
   selectCategory: (c: string) => void;
 
-  /* List modal */
   isListModalOpen: boolean;
   openListModal: () => void;
   closeListModal: () => void;
 
-  /* Submissions */
   addSubmission: (draft: SubmissionDraft) => void;
 }
 
 const BusinessCtx = createContext<Ctx | null>(null);
 
-/* Merge demo businesses with locally stored submissions */
 function mergeBusinesses(): Business[] {
   let stored: Business[] = [];
   if (typeof window !== "undefined") {
@@ -52,20 +52,26 @@ function mergeBusinesses(): Business[] {
     }
   }
 
-  const normalised: Business[] = stored.map((b) => ({
-    ...b,
-    id: b.id || `local-${Math.random().toString(36).slice(2, 9)}`,
-    slug: b.slug || slugify(b.name),
-    isLocal: true,
-    featured: false,
-    image:
-      b.image ||
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
-    hours: b.hours || "Contact business for hours",
-    services: b.services || "General services",
-    shortDesc:
-      b.shortDesc || (b.description ? b.description.slice(0, 110) : ""),
-  }));
+  const normalised: Business[] = stored.map((b) => {
+    // Fallback to the town center if the local submission has no coordinates
+    const fallback = getTownCenter(b.location);
+    return {
+      ...b,
+      id: b.id || `local-${Math.random().toString(36).slice(2, 9)}`,
+      slug: b.slug || slugify(b.name),
+      lat: typeof b.lat === "number" ? b.lat : fallback.lat,
+      lng: typeof b.lng === "number" ? b.lng : fallback.lng,
+      isLocal: true,
+      featured: false,
+      image:
+        b.image ||
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+      hours: b.hours || "Contact business for hours",
+      services: b.services || "General services",
+      shortDesc:
+        b.shortDesc || (b.description ? b.description.slice(0, 110) : ""),
+    };
+  });
 
   return [...normalised, ...DEMO_BUSINESSES];
 }
@@ -75,15 +81,12 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("all");
   const [location, setLocation] = useState("all");
-
   const [isListModalOpen, setListModalOpen] = useState(false);
 
-  /* Hydrate from localStorage after mount (SSR-safe) */
   useEffect(() => {
     setBusinesses(mergeBusinesses());
   }, []);
 
-  /* ---------- Filtering ---------- */
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     return businesses.filter((b) => {
@@ -107,7 +110,6 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     return counts;
   }, [businesses]);
 
-  /* ---------- Actions ---------- */
   const clearFilters = useCallback(() => {
     setKeyword("");
     setCategory("all");
@@ -127,12 +129,15 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   const closeListModal = useCallback(() => setListModalOpen(false), []);
 
   const addSubmission = useCallback((draft: SubmissionDraft) => {
+    const fallback = getTownCenter(draft.location);
     const entry: Business = {
       id: `local-${Date.now().toString(36)}`,
       slug: slugify(draft.name),
       name: draft.name,
       category: draft.category,
       location: draft.location,
+      lat: fallback.lat,
+      lng: fallback.lng,
       description: draft.description,
       shortDesc: draft.description.slice(0, 110),
       phone: draft.phone,
