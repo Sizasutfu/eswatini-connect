@@ -3,15 +3,9 @@ import type { Business, Category } from "./types";
 /* ---------- Inline SVG icons ---------- */
 const svg = (children: React.ReactNode) => (
   <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
+    width="24" height="24" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+    strokeLinejoin="round" aria-hidden="true"
   >
     {children}
   </svg>
@@ -26,7 +20,6 @@ const RestaurantIcon = () =>
       <path d="M18 2c-1.5 0-3 2-3 5s1.5 4 3 4v11" />
     </>
   );
-
 const HomeIcon = () =>
   svg(
     <>
@@ -35,7 +28,6 @@ const HomeIcon = () =>
       <path d="M9 21v-6h6v6" />
     </>
   );
-
 const CarIcon = () =>
   svg(
     <>
@@ -45,7 +37,6 @@ const CarIcon = () =>
       <circle cx="17" cy="20" r="1.4" />
     </>
   );
-
 const BeautyIcon = () =>
   svg(
     <>
@@ -53,7 +44,6 @@ const BeautyIcon = () =>
       <path d="M5 21c0-4 3-7 7-7s7 3 7 7" />
     </>
   );
-
 const TechIcon = () =>
   svg(
     <>
@@ -61,7 +51,6 @@ const TechIcon = () =>
       <path d="M8 20h8M12 16v4" />
     </>
   );
-
 const ShopIcon = () =>
   svg(
     <>
@@ -70,7 +59,6 @@ const ShopIcon = () =>
       <path d="M9 13h6" />
     </>
   );
-
 const BriefcaseIcon = () =>
   svg(
     <>
@@ -79,7 +67,6 @@ const BriefcaseIcon = () =>
       <path d="M3 12h18" />
     </>
   );
-
 const LeafIcon = () =>
   svg(
     <>
@@ -114,6 +101,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "Green Valley Garden Supplies is a community nursery offering seedlings, compost, tools, and expert gardening guidance. We help farmers, landscapers, and home gardeners get the right supplies for every season.",
     image:
       "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=1200&q=80",
+      "https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=1200&q=80",
+      "https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=1200&q=80",
+      "https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1200&q=80",
+    ],
     featured: true,
     phone: "+268 2404 1234",
     whatsapp: "26824041234",
@@ -134,6 +127,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "Royal Auto Care is a trusted workshop offering diagnostics, servicing, and repairs for all major vehicle makes. We pride ourselves on transparent pricing and reliable turnaround.",
     image:
       "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?w=1200&q=80",
+      "https://images.unsplash.com/photo-1493238792000-8113da705763?w=1200&q=80",
+      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80",
+      "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1200&q=80",
+    ],
     featured: false,
     phone: "+268 2404 2200",
     whatsapp: "26824042200",
@@ -154,6 +153,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "BrightSpark handles residential and commercial electrical work — from wiring and lighting installs to fault-finding and safety certificates. Reliable, punctual, and safety-first.",
     image:
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=1200&q=80",
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80",
+      "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&q=80",
+      "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=1200&q=80",
+    ],
     featured: true,
     phone: "+268 2404 3311",
     whatsapp: "26824043311",
@@ -168,11 +173,18 @@ export const DEMO_BUSINESSES: Business[] = [
     name: "Fresh Harvest Market",
     category: "Shopping & Retail",
     location: "Nhlangano",
-    shortDesc: "Fresh produce, pantry staples, and locally sourced goods daily.",
+    shortDesc:
+      "Fresh produce, pantry staples, and locally sourced goods daily.",
     description:
       "Fresh Harvest Market stocks fruit, vegetables, grains, and household essentials. We source from local farmers wherever possible to keep quality high and prices fair.",
     image:
       "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1542838132-92c53300491e?w=1200&q=80",
+      "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&q=80",
+      "https://images.unsplash.com/photo-1519996529931-28324d5a630e?w=1200&q=80",
+      "https://images.unsplash.com/photo-1543168256-418811576931?w=1200&q=80",
+    ],
     featured: false,
     phone: "+268 2404 4411",
     whatsapp: "26824044411",
@@ -193,6 +205,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "TechPoint Solutions offers laptop and desktop repairs, network setup, data recovery, and ongoing IT support for small businesses and households across the Manzini region.",
     image:
       "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1531297484001-80022131f5a1?w=1200&q=80",
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&q=80",
+      "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200&q=80",
+      "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&q=80",
+    ],
     featured: true,
     phone: "+268 2404 5522",
     whatsapp: "26824045522",
@@ -213,6 +231,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "Golden Plate Kitchen serves generous, freshly prepared meals in a cosy setting. We also cater for events, offices, and family gatherings across Mbabane.",
     image:
       "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1200&q=80",
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80",
+      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=1200&q=80",
+      "https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=1200&q=80",
+    ],
     featured: false,
     phone: "+268 2404 6633",
     whatsapp: "26824046633",
@@ -233,6 +257,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "Bloom Beauty Studio is a calm, welcoming space offering hair styling, skincare treatments, and wellness services. Bookings welcome — walk-ins subject to availability.",
     image:
       "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&q=80",
+      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=1200&q=80",
+      "https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=1200&q=80",
+      "https://images.unsplash.com/photo-1519415387722-a1c3bbef716c?w=1200&q=80",
+    ],
     featured: false,
     phone: "+268 2404 7744",
     whatsapp: "26824047744",
@@ -253,6 +283,12 @@ export const DEMO_BUSINESSES: Business[] = [
       "ProEdge Consulting supports small and growing businesses with practical advice: bookkeeping, tax readiness, and operational consulting tailored to the local market.",
     image:
       "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80",
+    gallery: [
+      "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&q=80",
+      "https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200&q=80",
+      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80",
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&q=80",
+    ],
     featured: true,
     phone: "+268 2404 8855",
     whatsapp: "26824048855",

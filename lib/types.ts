@@ -7,6 +7,7 @@ export interface Business {
   shortDesc: string;
   description: string;
   image: string;
+  gallery?: string[];        // ← new — optional array of photo URLs
   featured: boolean;
   phone: string;
   whatsapp: string;
