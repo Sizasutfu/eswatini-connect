@@ -4,7 +4,6 @@ import "./globals.css";
 import { BusinessProvider } from "@/context/BusinessContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import BusinessModal from "@/components/BusinessModal";
 import ListBusinessModal from "@/components/ListBusinessModal";
 
 const inter = Inter({
@@ -27,7 +26,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Header />
           <main>{children}</main>
           <Footer />
-          <BusinessModal />
           <ListBusinessModal />
         </BusinessProvider>
       </body>
