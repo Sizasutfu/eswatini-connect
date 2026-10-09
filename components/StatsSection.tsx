@@ -3,9 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 const STATS = [
-  { target: 250,  label: "Businesses Listed" },
-  { target: 8,    label: "Service Categories" },
-  { target: 10,   label: "Towns Covered" },
+  { target: 250, label: "Businesses Listed" },
+  { target: 8, label: "Service Categories" },
+  { target: 10, label: "Towns Covered" },
   { target: 1000, label: "Easy Connections" },
 ];
 
@@ -40,7 +40,8 @@ export default function StatsSection() {
   }, []);
 
   return (
-    <section ref={ref} aria-label="Illustrative statistics" className="py-16 bg-brand-green text-white">
+    <section ref={ref} aria-label="Illustrative statistics"
+      className="py-16 bg-brand-green text-white dark:bg-brand-deep">
       <div className="container">
         <p className="text-center text-xs uppercase tracking-[0.08em] text-white/65 mb-6">
           Illustrative prototype figures — not real platform statistics.

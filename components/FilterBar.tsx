@@ -4,6 +4,27 @@ import { useState } from "react";
 import { CATEGORIES, TOWNS } from "@/lib/data";
 import { useBusiness } from "@/context/BusinessContext";
 
+/* Small chevron used on all custom select wrappers */
+function Chevron() {
+  return (
+    <svg
+      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2
+        text-brand-muted dark:text-night-muted"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
 export default function FilterBar() {
   const {
     keyword,
@@ -28,8 +49,6 @@ export default function FilterBar() {
       setCopied(true);
       setTimeout(() => setCopied(false), 1800);
     } catch {
-      // Clipboard API can fail on http:// or in some browsers
-      // Fall back to a prompt so the user can copy manually.
       window.prompt("Copy this link:", window.location.href);
     }
   };
@@ -39,14 +58,17 @@ export default function FilterBar() {
       <div
         role="region"
         aria-label="Filter businesses"
-        className="grid sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto] gap-3 bg-white border border-brand-line rounded-brand-lg p-3 shadow-soft mb-5"
+        className="grid sm:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto] gap-3
+          bg-white border border-brand-line rounded-brand-lg p-3 shadow-soft mb-5
+          dark:bg-night-surface dark:border-night-line dark:shadow-card"
       >
+        {/* Keyword */}
         <div className="field">
           <label htmlFor="filterKeyword" className="sr-only">
             Keyword
           </label>
           <svg
-            className="text-brand-muted shrink-0"
+            className="text-brand-muted dark:text-night-muted shrink-0"
             width="18"
             height="18"
             viewBox="0 0 24 24"
@@ -68,7 +90,8 @@ export default function FilterBar() {
           />
         </div>
 
-        <div className="field">
+        {/* Category — relative wrapper holds the chevron */}
+        <div className="field relative">
           <label htmlFor="filterCategory" className="sr-only">
             Category
           </label>
@@ -84,9 +107,11 @@ export default function FilterBar() {
               </option>
             ))}
           </select>
+          <Chevron />
         </div>
 
-        <div className="field">
+        {/* Location */}
+        <div className="field relative">
           <label htmlFor="filterLocation" className="sr-only">
             Location
           </label>
@@ -102,9 +127,12 @@ export default function FilterBar() {
               </option>
             ))}
           </select>
+          <Chevron />
         </div>
 
+        {/* Clear */}
         <button
+          type="button"
           className="btn btn-outline btn-sm w-full lg:w-auto"
           onClick={clearFilters}
           disabled={!hasFilters}
@@ -114,16 +142,22 @@ export default function FilterBar() {
         </button>
       </div>
 
-      {/* Results meta + share */}
+      {/* Results meta + copy link */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-4 min-h-[22px]">
         <div
-          className="text-sm text-brand-muted font-medium"
+          className="text-sm text-brand-muted font-medium dark:text-night-muted"
           aria-live="polite"
         >
           {filtered.length > 0 && (
             <>
-              Showing <strong className="text-brand-ink">{filtered.length}</strong>{" "}
-              of <strong className="text-brand-ink">{businesses.length}</strong>{" "}
+              Showing{" "}
+              <strong className="text-brand-ink dark:text-night-heading">
+                {filtered.length}
+              </strong>{" "}
+              of{" "}
+              <strong className="text-brand-ink dark:text-night-heading">
+                {businesses.length}
+              </strong>{" "}
               businesses
             </>
           )}
@@ -133,7 +167,9 @@ export default function FilterBar() {
           <button
             type="button"
             onClick={handleCopyLink}
-            className="inline-flex items-center gap-2 text-sm font-medium text-brand-green hover:text-brand-greenDark transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium
+              text-brand-green hover:text-brand-greenDark transition-colors
+              dark:text-brand-gold dark:hover:brightness-110"
           >
             {copied ? (
               <>

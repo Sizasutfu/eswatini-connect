@@ -13,19 +13,15 @@ interface Props {
 }
 
 export default function BusinessImage({
-  src,
-  alt,
-  fill = true,
-  sizes,
-  priority = false,
-  className,
+  src, alt, fill = true, sizes, priority = false, className,
 }: Props) {
   const [failed, setFailed] = useState(false);
 
   if (failed) {
     return (
       <div
-        className="w-full h-full min-h-[120px] bg-gradient-to-br from-brand-greenLight to-brand-goldLight"
+        className="w-full h-full min-h-[120px] bg-gradient-to-br from-brand-greenLight to-brand-goldLight
+          dark:from-night-elevated dark:to-night-surface"
         role="img"
         aria-label={alt}
       />

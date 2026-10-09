@@ -20,10 +20,17 @@ export default function LocalBusinessFallback({ slug }: Props) {
   const [state, setState] = useState<State>({ status: "loading" });
 
   useEffect(() => {
+    // Reject empty or whitespace-only slugs early
+    if (!slug || slug.trim() === "") {
+      setState({ status: "notfound" });
+      return;
+    }
+
     try {
       const raw = localStorage.getItem(LS_KEY);
       const stored: Business[] = raw ? JSON.parse(raw) : [];
 
+      // Normalise stored data — ensure every entry has a slug and defaults
       const normalised = stored.map((b) => ({
         ...b,
         slug: b.slug || slugify(b.name),
@@ -56,7 +63,7 @@ export default function LocalBusinessFallback({ slug }: Props) {
 
   if (state.status === "loading") {
     return (
-      <div className="container max-w-[1100px] py-24 text-center text-brand-muted">
+      <div className="container max-w-[1100px] py-24 text-center text-brand-muted dark:text-night-muted">
         Loading…
       </div>
     );
@@ -66,12 +73,12 @@ export default function LocalBusinessFallback({ slug }: Props) {
     return (
       <div className="container max-w-[600px] py-24 text-center">
         <div className="text-5xl mb-6">🔍</div>
-        <h1 className="text-[1.8rem] font-bold text-brand-ink mb-3">
+        <h1 className="text-[1.8rem] font-bold text-brand-ink mb-3 dark:text-night-heading">
           Business not found
         </h1>
-        <p className="text-brand-muted mb-8">
+        <p className="text-brand-muted mb-8 dark:text-night-muted">
           We couldn&apos;t find a business at{" "}
-          <code className="px-1.5 py-0.5 bg-brand-soft rounded text-sm">
+          <code className="px-1.5 py-0.5 bg-brand-soft dark:bg-night-elevated rounded text-sm">
             /business/{slug}
           </code>
           . It may have been removed, or the link may be incorrect.

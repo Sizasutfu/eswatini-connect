@@ -6,18 +6,27 @@
   html {
     scroll-behavior: smooth;
     -webkit-text-size-adjust: 100%;
+    color-scheme: light;
   }
+
+  /* Tell the browser to render native form controls (select popups,
+     scrollbars, date pickers, etc.) in dark mode */
+  html.dark {
+    color-scheme: dark;
+  }
+
   body {
-    @apply bg-white text-brand-body antialiased;
+    @apply bg-white text-brand-body antialiased
+      dark:bg-night-bg dark:text-night-text;
   }
   h1,
   h2,
   h3,
   h4 {
-    @apply text-brand-ink tracking-tight;
+    @apply text-brand-ink tracking-tight dark:text-night-heading;
   }
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-gold ring-offset-2 rounded;
+    @apply outline-none ring-2 ring-brand-gold ring-offset-2 rounded dark:ring-offset-night-bg;
   }
 }
 
@@ -28,13 +37,18 @@
       transition hover:-translate-y-px active:translate-y-0;
   }
   .btn-primary {
-    @apply bg-brand-green text-white shadow-soft hover:bg-brand-greenDark hover:shadow-card;
+    @apply bg-brand-green text-white shadow-soft
+      hover:bg-brand-greenDark hover:shadow-card
+      dark:bg-brand-green dark:hover:bg-brand-greenDark;
   }
   .btn-gold {
-    @apply bg-brand-gold text-brand-ink hover:brightness-95;
+    @apply bg-brand-gold text-brand-ink hover:brightness-95 dark:text-night-bg;
   }
   .btn-outline {
-    @apply bg-white text-brand-green border-brand-line hover:border-brand-green hover:bg-brand-greenLight;
+    @apply bg-white text-brand-green border-brand-line
+      hover:border-brand-green hover:bg-brand-greenLight
+      dark:bg-night-surface dark:text-brand-gold dark:border-night-line
+      dark:hover:border-brand-gold dark:hover:bg-night-elevated;
   }
   .btn-sm {
     @apply min-h-[40px] px-4 py-2 text-xs;
@@ -43,16 +57,47 @@
     @apply px-8 py-4 text-base;
   }
 
+  /* ---- Field wrapper ---- */
   .field {
     @apply flex items-center gap-2 bg-brand-soft border border-transparent rounded-brand-md px-3
-      transition focus-within:border-brand-green focus-within:bg-white;
+      transition focus-within:border-brand-green focus-within:bg-white
+      dark:bg-night-elevated dark:focus-within:border-brand-gold dark:focus-within:bg-night-surface;
   }
   .field input,
   .field select {
-    @apply w-full bg-transparent border-0 py-3.5 text-sm text-brand-ink outline-none font-[inherit];
+    @apply w-full bg-transparent border-0 py-3.5 text-sm text-brand-ink outline-none font-[inherit]
+      dark:text-night-heading;
   }
+  .field input::placeholder {
+    @apply text-brand-muted dark:text-night-muted;
+  }
+
+  /* ---- Custom select styling ----
+     Hide the native arrow so we can drop in our own chevron.
+     Native option list colors are still OS-controlled, but color-scheme
+     (above) + option rules below cover most cases. */
   .field select {
-    @apply cursor-pointer appearance-none pr-5;
+    @apply cursor-pointer appearance-none pr-8 bg-transparent
+      text-brand-ink dark:text-night-heading;
+  }
+  .field select option {
+    /* These apply on Linux + Firefox + Edge (Chromium) on Windows.
+       Chrome on Windows often ignores them for the popup itself, but
+       color-scheme: dark handles that case. */
+    @apply bg-white text-brand-ink;
+  }
+  .field select option:checked,
+  .field select option:hover {
+    @apply bg-brand-greenLight text-brand-greenDark;
+  }
+  .dark .field select option {
+    background-color: #16231d;
+    color: #e6eeea;
+  }
+  .dark .field select option:checked,
+  .dark .field select option:hover {
+    background-color: #0b5d3b;
+    color: #d9a404;
   }
 }
 
