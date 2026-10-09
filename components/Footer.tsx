@@ -14,7 +14,6 @@ export default function Footer() {
   return (
     <footer className="bg-brand-deep text-white/75 pt-16 pb-5">
       <div className="container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-12 border-b border-white/10">
-        {/* Brand */}
         <div>
           <Link
             href="/"
@@ -43,7 +42,7 @@ export default function Footer() {
             </span>
           </Link>
           <p className="text-sm mb-5 max-w-[320px]">
-            Discover local. Connect easily. A modern directory for Eswatini's
+            Discover local. Connect easily. A modern directory for Eswatini&apos;s
             businesses and service providers.
           </p>
           <div className="flex gap-2">
@@ -86,7 +85,6 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Quick Links */}
         <div>
           <h4 className={headingCls}>Quick Links</h4>
           <ul className="flex flex-col gap-2">
@@ -117,7 +115,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Popular Categories */}
         <div>
           <h4 className={headingCls}>Popular Categories</h4>
           <ul className="flex flex-col gap-2">
@@ -135,7 +132,6 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Contact */}
         <div>
           <h4 className={headingCls}>Contact (Placeholder)</h4>
           <ul className="flex flex-col gap-2 text-sm">

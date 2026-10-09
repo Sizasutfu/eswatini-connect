@@ -25,14 +25,14 @@ export default function Hero() {
       <div className="container grid lg:grid-cols-[1.05fr_1fr] gap-16 items-center">
         <div>
           <span className="inline-block px-3.5 py-1.5 bg-white border border-brand-line rounded-full text-xs font-semibold text-brand-green mb-4">
-            🇸🇿 Eswatini's local business directory
+            🇸🇿 Eswatini&apos;s local business directory
           </span>
           <h1 className="text-[2.1rem] sm:text-[2.7rem] lg:text-[3.4rem] font-bold tracking-tight text-brand-ink mb-4">
             Find the Right Services, Right Here in Eswatini.
           </h1>
           <p className="text-[1.08rem] text-brand-muted max-w-[540px] mb-6">
-            Discover trusted local businesses, explore services near you, and connect
-            with the people who make our communities thrive.
+            Discover trusted local businesses, explore services near you, and
+            connect with the people who make our communities thrive.
           </p>
 
           <form
@@ -121,7 +121,6 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Collage */}
         <div
           className="relative min-h-[260px] sm:min-h-[340px] lg:min-h-[420px]"
           aria-hidden="true"

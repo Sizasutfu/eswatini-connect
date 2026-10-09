@@ -1,11 +1,17 @@
 "use client";
 
 import {
-  createContext, useContext, useCallback, useEffect, useMemo, useState,
-  type ReactNode
+  createContext,
+  useContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
 } from "react";
 import type { Business, SubmissionDraft } from "@/lib/types";
 import { CATEGORIES, DEMO_BUSINESSES, LS_KEY } from "@/lib/data";
+import { slugify } from "@/lib/slugify";
 
 interface Ctx {
   /* Data */
@@ -22,11 +28,6 @@ interface Ctx {
   setLocation: (v: string) => void;
   clearFilters: () => void;
   selectCategory: (c: string) => void;
-
-  /* Business modal */
-  activeBusiness: Business | null;
-  openBusiness: (id: string) => void;
-  closeBusiness: () => void;
 
   /* List modal */
   isListModalOpen: boolean;
@@ -54,12 +55,16 @@ function mergeBusinesses(): Business[] {
   const normalised: Business[] = stored.map((b) => ({
     ...b,
     id: b.id || `local-${Math.random().toString(36).slice(2, 9)}`,
+    slug: b.slug || slugify(b.name),
     isLocal: true,
     featured: false,
-    image: b.image || "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
+    image:
+      b.image ||
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
     hours: b.hours || "Contact business for hours",
     services: b.services || "General services",
-    shortDesc: b.shortDesc || (b.description ? b.description.slice(0, 110) : "")
+    shortDesc:
+      b.shortDesc || (b.description ? b.description.slice(0, 110) : ""),
   }));
 
   return [...normalised, ...DEMO_BUSINESSES];
@@ -71,7 +76,6 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   const [category, setCategory] = useState("all");
   const [location, setLocation] = useState("all");
 
-  const [activeBusiness, setActiveBusiness] = useState<Business | null>(null);
   const [isListModalOpen, setListModalOpen] = useState(false);
 
   /* Hydrate from localStorage after mount (SSR-safe) */
@@ -113,25 +117,19 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   const selectCategory = useCallback((c: string) => {
     setCategory(c);
     if (typeof window !== "undefined") {
-      document.getElementById("businesses")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      document
+        .getElementById("businesses")
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, []);
 
-  const openBusiness = useCallback(
-    (id: string) => {
-      const biz = businesses.find((b) => b.id === id);
-      if (biz) setActiveBusiness(biz);
-    },
-    [businesses]
-  );
-
-  const closeBusiness = useCallback(() => setActiveBusiness(null), []);
   const openListModal = useCallback(() => setListModalOpen(true), []);
   const closeListModal = useCallback(() => setListModalOpen(false), []);
 
   const addSubmission = useCallback((draft: SubmissionDraft) => {
     const entry: Business = {
       id: `local-${Date.now().toString(36)}`,
+      slug: slugify(draft.name),
       name: draft.name,
       category: draft.category,
       location: draft.location,
@@ -143,12 +141,12 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
       address: draft.address || "—",
       hours: "Contact business for hours",
       services: "General services",
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80",
+      image:
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
       featured: false,
-      isLocal: true
+      isLocal: true,
     };
 
-    /* Persist */
     try {
       const existing = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
       localStorage.setItem(LS_KEY, JSON.stringify([entry, ...existing]));
@@ -171,13 +169,10 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     setLocation,
     clearFilters,
     selectCategory,
-    activeBusiness,
-    openBusiness,
-    closeBusiness,
     isListModalOpen,
     openListModal,
     closeListModal,
-    addSubmission
+    addSubmission,
   };
 
   return <BusinessCtx.Provider value={value}>{children}</BusinessCtx.Provider>;

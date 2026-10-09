@@ -22,12 +22,15 @@ export default function Header() {
     if (pathname === "/") {
       document.getElementById("heroKeyword")?.focus();
       document.querySelector(".hero")?.scrollIntoView({ behavior: "smooth" });
-    } else {
+    } else if (pathname === "/explore") {
       const input = document.getElementById("filterKeyword");
       if (input) {
         input.focus();
         input.scrollIntoView({ behavior: "smooth", block: "center" });
       }
+    } else {
+      // Any other page — navigate to explore
+      window.location.href = "/explore";
     }
   };
 

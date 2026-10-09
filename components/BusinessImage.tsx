@@ -12,10 +12,6 @@ interface Props {
   className?: string;
 }
 
-/**
- * next/image wrapper with a graceful gradient fallback
- * if the remote image fails to load.
- */
 export default function BusinessImage({
   src,
   alt,

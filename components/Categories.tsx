@@ -10,8 +10,15 @@ export default function Categories() {
     <section id="categories" className="py-24 bg-white" aria-labelledby="cat-heading">
       <div className="container">
         <div className="max-w-[640px] mx-auto mb-12 text-center">
-          <h2 id="cat-heading" className="text-[1.55rem] sm:text-[1.8rem] lg:text-[2.1rem] font-bold">Explore Popular Categories</h2>
-          <p className="text-brand-muted text-[1.08rem]">Find the services you need, all in one place.</p>
+          <h2
+            id="cat-heading"
+            className="text-[1.55rem] sm:text-[1.8rem] lg:text-[2.1rem] font-bold"
+          >
+            Explore Popular Categories
+          </h2>
+          <p className="text-brand-muted text-[1.08rem]">
+            Find the services you need, all in one place.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -25,15 +32,21 @@ export default function Categories() {
                 onClick={() => selectCategory(cat.name)}
                 className={`text-left flex flex-col gap-3 p-6 rounded-brand-lg border transition
                   hover:-translate-y-0.5 hover:shadow-card
-                  ${active
-                    ? "border-brand-green bg-brand-greenLight"
-                    : "border-brand-line bg-white hover:border-brand-green"}`}
+                  ${
+                    active
+                      ? "border-brand-green bg-brand-greenLight"
+                      : "border-brand-line bg-white hover:border-brand-green"
+                  }`}
               >
                 <span className="w-12 h-12 inline-flex items-center justify-center rounded-brand-md bg-brand-greenLight text-brand-green">
                   {cat.icon}
                 </span>
-                <h3 className="text-base font-semibold text-brand-ink">{cat.name}</h3>
-                <p className="text-xs text-brand-muted">{cat.desc} · {count} listing{count === 1 ? "" : "s"}</p>
+                <h3 className="text-base font-semibold text-brand-ink">
+                  {cat.name}
+                </h3>
+                <p className="text-xs text-brand-muted">
+                  {cat.desc} · {count} listing{count === 1 ? "" : "s"}
+                </p>
               </button>
             );
           })}
