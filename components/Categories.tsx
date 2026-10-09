@@ -1,16 +1,26 @@
 "use client";
 
-import { CATEGORIES } from "@/lib/data";
+import Link from "next/link";
 import { useBusiness } from "@/context/BusinessContext";
+import CategoryGrid from "./CategoryGrid";
 
 export default function Categories() {
-  const { category, selectCategory, categoryCounts } = useBusiness();
+  // We still subscribe to the context here so the section re-renders
+  // when a local business is submitted (updating the count labels).
+  const { categoryCounts } = useBusiness();
 
   return (
-    <section id="categories" className="py-24 bg-white dark:bg-night-bg" aria-labelledby="cat-heading">
+    <section
+      id="categories"
+      className="py-24 bg-white dark:bg-night-bg"
+      aria-labelledby="cat-heading"
+    >
       <div className="container">
         <div className="max-w-[640px] mx-auto mb-12 text-center">
-          <h2 id="cat-heading" className="text-[1.55rem] sm:text-[1.8rem] lg:text-[2.1rem] font-bold">
+          <h2
+            id="cat-heading"
+            className="text-[1.55rem] sm:text-[1.8rem] lg:text-[2.1rem] font-bold"
+          >
             Explore Popular Categories
           </h2>
           <p className="text-brand-muted text-[1.08rem] dark:text-night-muted">
@@ -18,37 +28,19 @@ export default function Categories() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {CATEGORIES.map((cat) => {
-            const count = categoryCounts[cat.name] ?? 0;
-            const active = category === cat.name;
-            return (
-              <button
-                key={cat.name}
-                type="button"
-                onClick={() => selectCategory(cat.name)}
-                className={`text-left flex flex-col gap-3 p-6 rounded-brand-lg border transition
-                  hover:-translate-y-0.5 hover:shadow-card
-                  ${
-                    active
-                      ? "border-brand-green bg-brand-greenLight dark:border-brand-gold dark:bg-brand-green/10"
-                      : "border-brand-line bg-white hover:border-brand-green dark:border-night-line dark:bg-night-surface dark:hover:border-brand-gold"
-                  }`}
-              >
-                <span className="w-12 h-12 inline-flex items-center justify-center rounded-brand-md
-                  bg-brand-greenLight text-brand-green
-                  dark:bg-brand-green/20 dark:text-brand-gold">
-                  {cat.icon}
-                </span>
-                <h3 className="text-base font-semibold text-brand-ink dark:text-night-heading">
-                  {cat.name}
-                </h3>
-                <p className="text-xs text-brand-muted dark:text-night-muted">
-                  {cat.desc} · {count} listing{count === 1 ? "" : "s"}
-                </p>
-              </button>
-            );
-          })}
+        <CategoryGrid counts={categoryCounts} />
+
+        <div className="text-center mt-10">
+          <Link href="/categories" className="btn btn-outline">
+            View All Categories
+            <svg
+              width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+              strokeLinejoin="round" aria-hidden="true" className="ml-2"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
         </div>
       </div>
     </section>

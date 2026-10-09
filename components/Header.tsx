@@ -53,19 +53,28 @@ export default function Header() {
           onClick={closeMenu}
         >
           <svg
-            viewBox="0 0 40 40" width="36" height="36"
-            aria-hidden="true" className="rounded-[10px] shrink-0"
+            viewBox="0 0 40 40"
+            width="36"
+            height="36"
+            aria-hidden="true"
+            className="rounded-[10px] shrink-0"
           >
             <rect width="40" height="40" rx="10" fill="#0b5d3b" />
             <path
-              d="M12 26 L20 12 L28 26" stroke="#d9a404" strokeWidth="2.8"
-              strokeLinecap="round" strokeLinejoin="round" fill="none"
+              d="M12 26 L20 12 L28 26"
+              stroke="#d9a404"
+              strokeWidth="2.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
             />
             <circle cx="20" cy="30" r="2.2" fill="#d9a404" />
           </svg>
           <span>
             Eswatini{" "}
-            <span className="text-brand-green dark:text-brand-gold">Connect</span>
+            <span className="text-brand-green dark:text-brand-gold">
+              Connect
+            </span>
           </span>
         </Link>
 
@@ -95,7 +104,7 @@ export default function Header() {
           <Link href="/map" className={navLink} onClick={closeMenu}>
             Map
           </Link>
-          <Link href="/#categories" className={navLink} onClick={closeMenu}>
+          <Link href="/categories" className={navLink} onClick={closeMenu}>
             Categories
           </Link>
           <button
@@ -116,8 +125,16 @@ export default function Header() {
               dark:hover:border-brand-gold dark:hover:text-brand-gold"
             onClick={handleSearchClick}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4.35-4.35" />
             </svg>
@@ -142,9 +159,15 @@ export default function Header() {
               bg-transparent border border-brand-line rounded-brand-sm
               dark:border-night-line"
           >
-            <span className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "translate-y-2 rotate-45" : ""}`} />
-            <span className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "opacity-0" : ""}`} />
-            <span className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+            <span
+              className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "translate-y-2 rotate-45" : ""}`}
+            />
+            <span
+              className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "opacity-0" : ""}`}
+            />
+            <span
+              className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "-translate-y-2 -rotate-45" : ""}`}
+            />
           </button>
         </div>
       </div>

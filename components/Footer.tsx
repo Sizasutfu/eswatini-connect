@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/data";
+import { getCategorySlug } from "@/lib/categoryUtils";
 import { useBusiness } from "@/context/BusinessContext";
 
 export default function Footer() {
-  const { selectCategory, openListModal } = useBusiness();
+  const { openListModal } = useBusiness();
   const year = new Date().getFullYear();
 
   const linkCls = "text-sm text-white/70 hover:text-brand-gold transition-colors";
@@ -14,6 +15,7 @@ export default function Footer() {
   return (
     <footer className="bg-brand-deep text-white/75 pt-16 pb-5">
       <div className="container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-8 pb-12 border-b border-white/10">
+        {/* Brand */}
         <div>
           <Link
             href="/"
@@ -85,6 +87,7 @@ export default function Footer() {
           </div>
         </div>
 
+        {/* Quick Links */}
         <div>
           <h4 className={headingCls}>Quick Links</h4>
           <ul className="flex flex-col gap-2">
@@ -99,8 +102,13 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/#categories" className={linkCls}>
+              <Link href="/categories" className={linkCls}>
                 Categories
+              </Link>
+            </li>
+            <li>
+              <Link href="/map" className={linkCls}>
+                Map View
               </Link>
             </li>
             <li>
@@ -115,23 +123,32 @@ export default function Footer() {
           </ul>
         </div>
 
+        {/* Popular Categories — links to /category/[slug] */}
         <div>
           <h4 className={headingCls}>Popular Categories</h4>
           <ul className="flex flex-col gap-2">
             {CATEGORIES.slice(0, 5).map((c) => (
               <li key={c.name}>
                 <Link
-                  href="/explore"
-                  onClick={() => selectCategory(c.name)}
+                  href={`/category/${getCategorySlug(c.name)}`}
                   className={linkCls}
                 >
                   {c.name}
                 </Link>
               </li>
             ))}
+            <li>
+              <Link
+                href="/categories"
+                className="text-sm text-brand-gold/90 hover:text-brand-gold transition-colors font-medium"
+              >
+                View all →
+              </Link>
+            </li>
           </ul>
         </div>
 
+        {/* Contact */}
         <div>
           <h4 className={headingCls}>Contact (Placeholder)</h4>
           <ul className="flex flex-col gap-2 text-sm">
