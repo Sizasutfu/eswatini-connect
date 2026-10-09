@@ -2,32 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-white text-brand-body antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply text-brand-ink tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand-gold ring-offset-2 rounded;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold
+      border border-transparent whitespace-nowrap min-h-[46px] px-5 py-3 text-sm
+      transition hover:-translate-y-px active:translate-y-0;
+  }
+  .btn-primary {
+    @apply bg-brand-green text-white shadow-soft hover:bg-brand-greenDark hover:shadow-card;
+  }
+  .btn-gold {
+    @apply bg-brand-gold text-brand-ink hover:brightness-95;
+  }
+  .btn-outline {
+    @apply bg-white text-brand-green border-brand-line hover:border-brand-green hover:bg-brand-greenLight;
+  }
+  .btn-sm {
+    @apply min-h-[40px] px-4 py-2 text-xs;
+  }
+  .btn-lg {
+    @apply px-8 py-4 text-base;
+  }
+
+  .field {
+    @apply flex items-center gap-2 bg-brand-soft border border-transparent rounded-brand-md px-3
+      transition focus-within:border-brand-green focus-within:bg-white;
+  }
+  .field input,
+  .field select {
+    @apply w-full bg-transparent border-0 py-3.5 text-sm text-brand-ink outline-none font-[inherit];
+  }
+  .field select {
+    @apply cursor-pointer appearance-none pr-5;
+  }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
