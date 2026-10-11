@@ -10,18 +10,16 @@ import {
   type ReactNode,
 } from "react";
 import type { Business, SubmissionDraft } from "@/lib/types";
-import {
-  CATEGORIES,
-  DEMO_BUSINESSES,
-  LS_KEY,
-  getTownCenter,
-} from "@/lib/data";
+import { CATEGORIES } from "@/lib/data";
+import { getTownCenter } from "@/lib/data";
 import { slugify } from "@/lib/slugify";
+import { createClient } from "@/lib/supabase/client";
 
 interface Ctx {
   businesses: Business[];
   filtered: Business[];
   categoryCounts: Record<string, number>;
+  isLoading: boolean;
 
   keyword: string;
   category: string;
@@ -36,57 +34,95 @@ interface Ctx {
   openListModal: () => void;
   closeListModal: () => void;
 
-  addSubmission: (draft: SubmissionDraft) => void;
+  addSubmission: (draft: SubmissionDraft) => Promise<void>;
 }
 
 const BusinessCtx = createContext<Ctx | null>(null);
 
-function mergeBusinesses(): Business[] {
-  let stored: Business[] = [];
-  if (typeof window !== "undefined") {
-    try {
-      const raw = localStorage.getItem(LS_KEY);
-      stored = raw ? JSON.parse(raw) : [];
-    } catch {
-      stored = [];
-    }
-  }
+interface DbRow {
+  id: number;
+  slug: string;
+  name: string;
+  category: string;
+  location: string;
+  lat: number | null;
+  lng: number | null;
+  short_desc: string | null;
+  description: string | null;
+  image: string | null;
+  gallery: string[] | null;
+  featured: boolean;
+  phone: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  address: string | null;
+  hours: string | null;
+  services: string | null;
+  is_local: boolean;
+}
 
-  const normalised: Business[] = stored.map((b) => {
-    // Fallback to the town center if the local submission has no coordinates
-    const fallback = getTownCenter(b.location);
-    return {
-      ...b,
-      id: b.id || `local-${Math.random().toString(36).slice(2, 9)}`,
-      slug: b.slug || slugify(b.name),
-      lat: typeof b.lat === "number" ? b.lat : fallback.lat,
-      lng: typeof b.lng === "number" ? b.lng : fallback.lng,
-      isLocal: true,
-      featured: false,
-      image:
-        b.image ||
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
-      hours: b.hours || "Contact business for hours",
-      services: b.services || "General services",
-      shortDesc:
-        b.shortDesc || (b.description ? b.description.slice(0, 110) : ""),
-    };
-  });
-
-  return [...normalised, ...DEMO_BUSINESSES];
+function rowToBusiness(r: DbRow): Business {
+  return {
+    id: String(r.id),
+    slug: r.slug,
+    name: r.name,
+    category: r.category,
+    location: r.location,
+    lat: r.lat ?? -26.5225,
+    lng: r.lng ?? 31.4659,
+    shortDesc: r.short_desc ?? "",
+    description: r.description ?? "",
+    image: r.image ?? "",
+    gallery: r.gallery ?? [],
+    featured: r.featured,
+    phone: r.phone ?? "",
+    whatsapp: r.whatsapp ?? "",
+    email: r.email ?? "",
+    address: r.address ?? "—",
+    hours: r.hours ?? "Contact business for hours",
+    services: r.services ?? "General services",
+    isLocal: r.is_local,
+  };
 }
 
 export function BusinessProvider({ children }: { children: ReactNode }) {
-  const [businesses, setBusinesses] = useState<Business[]>(DEMO_BUSINESSES);
+  const [businesses, setBusinesses] = useState<Business[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("all");
   const [location, setLocation] = useState("all");
   const [isListModalOpen, setListModalOpen] = useState(false);
 
+  /* ---- Load businesses from Supabase on mount ---- */
   useEffect(() => {
-    setBusinesses(mergeBusinesses());
+    const supabase = createClient();
+    let cancelled = false;
+
+    (async () => {
+      const { data, error } = await supabase
+        .from("businesses")
+        .select("*")
+        .order("featured", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (cancelled) return;
+
+      if (error) {
+        console.error("Failed to load businesses:", error);
+        setBusinesses([]);
+      } else {
+        setBusinesses((data as DbRow[]).map(rowToBusiness));
+      }
+      setIsLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
+  /* ---- Filtering (unchanged from before) ---- */
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     return businesses.filter((b) => {
@@ -128,44 +164,52 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   const openListModal = useCallback(() => setListModalOpen(true), []);
   const closeListModal = useCallback(() => setListModalOpen(false), []);
 
-  const addSubmission = useCallback((draft: SubmissionDraft) => {
+  /* ---- Submissions: write to Supabase ---- */
+  const addSubmission = useCallback(async (draft: SubmissionDraft) => {
     const fallback = getTownCenter(draft.location);
-    const entry: Business = {
-      id: `local-${Date.now().toString(36)}`,
+    const supabase = createClient();
+
+    const payload = {
       slug: slugify(draft.name),
       name: draft.name,
       category: draft.category,
       location: draft.location,
       lat: fallback.lat,
       lng: fallback.lng,
+      short_desc: draft.description.slice(0, 110),
       description: draft.description,
-      shortDesc: draft.description.slice(0, 110),
+      image:
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+      gallery: [],
+      featured: false,
       phone: draft.phone,
       whatsapp: draft.whatsapp,
       email: draft.email,
       address: draft.address || "—",
       hours: "Contact business for hours",
       services: "General services",
-      image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
-      featured: false,
-      isLocal: true,
+      is_local: true,
     };
 
-    try {
-      const existing = JSON.parse(localStorage.getItem(LS_KEY) || "[]");
-      localStorage.setItem(LS_KEY, JSON.stringify([entry, ...existing]));
-    } catch {
-      /* storage may be unavailable */
+    const { data, error } = await supabase
+      .from("businesses")
+      .insert(payload)
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Submission failed:", error);
+      throw error;
     }
 
-    setBusinesses((prev) => [entry, ...prev]);
+    setBusinesses((prev) => [rowToBusiness(data as DbRow), ...prev]);
   }, []);
 
   const value: Ctx = {
     businesses,
     filtered,
     categoryCounts,
+    isLoading,
     keyword,
     category,
     location,

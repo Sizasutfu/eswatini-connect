@@ -1,29 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import {
-  DEMO_BUSINESSES,
-  getDemoBusinessBySlug,
-  getDemoSlugs,
-} from "@/lib/data";
+import { getAllBusinesses, getBusinessBySlug } from "@/lib/supabase/queries";
 import BusinessDetail from "@/components/BusinessDetail";
-import LocalBusinessFallback from "@/components/LocalBusinessFallback";
 
 interface PageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  return getDemoSlugs().map((slug) => ({ slug }));
-}
-
-export function generateMetadata({ params }: PageProps): Metadata {
-  // Guard: empty slug → generic metadata (page will call notFound())
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   if (!params.slug || params.slug.trim() === "") {
     return { title: "Business" };
   }
 
-  const biz = getDemoBusinessBySlug(params.slug);
-
+  const biz = await getBusinessBySlug(params.slug);
   if (!biz) {
     return {
       title: "Business",
@@ -32,16 +21,13 @@ export function generateMetadata({ params }: PageProps): Metadata {
     };
   }
 
-  // Note: do NOT include "| Eswatini Connect" — the layout's title.template appends it.
   const title = `${biz.name} — ${biz.category} in ${biz.location}`;
   const path = `/business/${biz.slug}`;
 
   return {
     title,
     description: biz.shortDesc,
-    alternates: {
-      canonical: path,
-    },
+    alternates: { canonical: path },
     openGraph: {
       type: "website",
       title,
@@ -50,12 +36,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
       siteName: "Eswatini Connect",
       locale: "en_SZ",
       images: [
-        {
-          url: biz.image,
-          width: 1200,
-          height: 630,
-          alt: biz.name,
-        },
+        { url: biz.image, width: 1200, height: 630, alt: biz.name },
       ],
     },
     twitter: {
@@ -68,54 +49,48 @@ export function generateMetadata({ params }: PageProps): Metadata {
       biz.name,
       biz.category,
       biz.location,
-      ...biz.services
-        .split(/[·,]/)
-        .map((s) => s.trim())
-        .filter(Boolean),
+      ...biz.services.split(/[·,]/).map((s) => s.trim()).filter(Boolean),
     ],
   };
 }
 
-export default function BusinessPage({ params }: PageProps) {
-  // Reject empty or whitespace-only slugs
+export default async function BusinessPage({ params }: PageProps) {
   if (!params.slug || params.slug.trim() === "") {
     notFound();
   }
 
-  const biz = getDemoBusinessBySlug(params.slug);
+  const biz = await getBusinessBySlug(params.slug);
+  if (!biz) notFound();
 
-  if (biz) {
-    const related = DEMO_BUSINESSES.filter(
-      (b) => b.category === biz.category && b.slug !== biz.slug
-    ).slice(0, 3);
+  const all = await getAllBusinesses();
+  const related = all
+    .filter((b) => b.category === biz.category && b.slug !== biz.slug)
+    .slice(0, 3);
 
-    const structuredData = {
-      "@context": "https://schema.org",
-      "@type": "LocalBusiness",
-      name: biz.name,
-      description: biz.description || biz.shortDesc,
-      image: biz.image,
-      telephone: biz.phone,
-      email: biz.email,
-      address: {
-        "@type": "PostalAddress",
-        streetAddress: biz.address,
-        addressLocality: biz.location,
-        addressCountry: "SZ",
-      },
-      openingHours: biz.hours,
-    };
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    name: biz.name,
+    description: biz.description || biz.shortDesc,
+    image: biz.image,
+    telephone: biz.phone,
+    email: biz.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: biz.address,
+      addressLocality: biz.location,
+      addressCountry: "SZ",
+    },
+    openingHours: biz.hours,
+  };
 
-    return (
-      <>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-        />
-        <BusinessDetail business={biz} related={related} />
-      </>
-    );
-  }
-
-  return <LocalBusinessFallback slug={params.slug} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
+      <BusinessDetail business={biz} related={related} />
+    </>
+  );
 }
