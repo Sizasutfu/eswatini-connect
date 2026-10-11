@@ -151,6 +151,11 @@ export default function Footer() {
                 Saved Businesses
               </Link>
             </li>
+            <li>
+              <Link href="/messages" className={linkCls}>
+                Your Messages
+              </Link>
+            </li>
           </ul>
         </div>
 
