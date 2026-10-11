@@ -81,9 +81,6 @@
       text-brand-ink dark:text-night-heading;
   }
   .field select option {
-    /* These apply on Linux + Firefox + Edge (Chromium) on Windows.
-       Chrome on Windows often ignores them for the popup itself, but
-       color-scheme: dark handles that case. */
     @apply bg-white text-brand-ink;
   }
   .field select option:checked,
@@ -116,6 +113,24 @@
    Leaflet injects its own classes; we override them here so the
    map, popups, and controls match the site theme.
    ============================================================ */
+
+/* ---- Tile pane: invert for dark mode ----
+   OpenStreetMap only ships a light raster style. We flip the tiles
+   with a CSS filter so the map matches the site's dark theme without
+   needing a second tile provider. */
+.dark .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.95);
+}
+
+/* Keep markers, popups, and shadow pane un-inverted. These are
+   siblings of the tile pane in Leaflet's DOM, but the explicit
+   reset defends against any future restructuring. */
+.dark .leaflet-marker-pane,
+.dark .leaflet-popup-pane,
+.dark .leaflet-shadow-pane,
+.dark .leaflet-control-container {
+  filter: none;
+}
 
 /* Popup container */
 .dark .leaflet-popup-content-wrapper,

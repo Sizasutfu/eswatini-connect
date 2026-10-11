@@ -21,21 +21,24 @@ import type { Business } from "@/lib/types";
 
 interface Props {
   businesses: Business[];
-  /** Called when the user clicks "Open details" — optional */
   className?: string;
 }
 
-/* ---------- Tile providers ---------- */
+/* -----------------------------------------------------------
+   Tile providers — OpenStreetMap (no API key required)
+   Dark mode uses the same tiles, with a CSS filter applied
+   to the tile pane so it doesn't blow out the dark theme.
+   ----------------------------------------------------------- */
 const TILES = {
   light: {
-    url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
   dark: {
-    url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    url: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
 };
 
@@ -56,7 +59,17 @@ function FitBounds({ points }: { points: [number, number][] }) {
       map.setView(points[0], 13);
       return;
     }
-    const bounds = L.latLngBounds(points.map(([lat, lng]) => L.latLng(lat, lng)));
+
+    // If every point is identical, fitBounds behaves oddly — guard against it.
+    const unique = new Set(points.map(([lat, lng]) => `${lat},${lng}`));
+    if (unique.size === 1) {
+      map.setView(points[0], 13);
+      return;
+    }
+
+    const bounds = L.latLngBounds(
+      points.map(([lat, lng]) => L.latLng(lat, lng))
+    );
     map.fitBounds(bounds, { padding: [40, 40], maxZoom: 13 });
   }, [map, points]);
 
@@ -68,14 +81,11 @@ export default function BusinessMap({ businesses, className }: Props) {
   const isDark = resolvedTheme === "dark";
   const tile = isDark ? TILES.dark : TILES.light;
 
-  // Stable array of [lat, lng] for FitBounds
   const points = useMemo<[number, number][]>(
     () => businesses.map((b) => [b.lat, b.lng]),
     [businesses]
   );
 
-  // Key forces the TileLayer to remount when the theme flips,
-  // which makes the new tile URL take effect immediately.
   const layerKey = isDark ? "dark" : "light";
 
   return (
