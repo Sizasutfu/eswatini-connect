@@ -166,44 +166,54 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
 
   /* ---- Submissions: write to Supabase ---- */
   const addSubmission = useCallback(async (draft: SubmissionDraft) => {
-    const fallback = getTownCenter(draft.location);
-    const supabase = createClient();
+  const fallback = getTownCenter(draft.location);
+  const supabase = createClient();
 
-    const payload = {
-      slug: slugify(draft.name),
-      name: draft.name,
-      category: draft.category,
-      location: draft.location,
-      lat: fallback.lat,
-      lng: fallback.lng,
-      short_desc: draft.description.slice(0, 110),
-      description: draft.description,
-      image:
-        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
-      gallery: [],
-      featured: false,
-      phone: draft.phone,
-      whatsapp: draft.whatsapp,
-      email: draft.email,
-      address: draft.address || "—",
-      hours: "Contact business for hours",
-      services: "General services",
-      is_local: true,
-    };
+  // Get the signed-in user's id — RLS requires user_id to match auth.uid()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-    const { data, error } = await supabase
-      .from("businesses")
-      .insert(payload)
-      .select()
-      .single();
+  if (!user) {
+    throw new Error("You must be signed in to submit a business.");
+  }
 
-    if (error) {
-      console.error("Submission failed:", error);
-      throw error;
-    }
+  const payload = {
+    slug: slugify(draft.name),
+    name: draft.name,
+    category: draft.category,
+    location: draft.location,
+    lat: fallback.lat,
+    lng: fallback.lng,
+    short_desc: draft.description.slice(0, 110),
+    description: draft.description,
+    image:
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+    gallery: [],
+    featured: false,
+    phone: draft.phone,
+    whatsapp: draft.whatsapp,
+    email: draft.email,
+    address: draft.address || "—",
+    hours: "Contact business for hours",
+    services: "General services",
+    is_local: true,
+    user_id: user.id,
+  };
 
-    setBusinesses((prev) => [rowToBusiness(data as DbRow), ...prev]);
-  }, []);
+  const { data, error: insertError } = await supabase
+    .from("businesses")
+    .insert(payload)
+    .select()
+    .single();
+
+  if (insertError) {
+    console.error("Submission failed:", insertError);
+    throw insertError;
+  }
+
+  setBusinesses((prev) => [rowToBusiness(data as DbRow), ...prev]);
+}, []);
 
   const value: Ctx = {
     businesses,

@@ -19,6 +19,7 @@ export interface Business {
   address: string;
   hours: string;
   services: string;
+
   isLocal?: boolean;
 }
 
@@ -37,4 +38,7 @@ export interface SubmissionDraft {
   whatsapp: string;
   email: string;
   address: string;
+  hours: string;
+  services: string;
+  image: string;
 }

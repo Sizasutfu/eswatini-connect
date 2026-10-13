@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useBusiness } from "@/context/BusinessContext";
 import { useFavourites } from "@/context/FavouritesContext";
 import ThemeToggle from "./ThemeToggle";
+import UserMenu from "./UserMenu";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
@@ -143,10 +144,12 @@ export default function Header() {
 
           <ThemeToggle />
 
+          <UserMenu />
+
           <button
             type="button"
             onClick={handleListBusiness}
-            className="btn btn-primary btn-sm hidden md:inline-flex"
+            className="btn btn-primary btn-sm hidden lg:inline-flex"
           >
             List Your Business
           </button>
