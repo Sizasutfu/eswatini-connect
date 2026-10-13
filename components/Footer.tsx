@@ -113,6 +113,16 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/saved" className={linkCls}>
+                Saved Businesses
+              </Link>
+            </li>
+            <li>
+              <Link href="/messages" className={linkCls}>
+                Your Messages
+              </Link>
+            </li>
+            <li>
               <button
                 type="button"
                 onClick={openListModal}
@@ -124,7 +134,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Popular Categories — links to /category/[slug] */}
+        {/* Popular Categories */}
         <div>
           <h4 className={headingCls}>Popular Categories</h4>
           <ul className="flex flex-col gap-2">
@@ -146,16 +156,6 @@ export default function Footer() {
                 View all →
               </Link>
             </li>
-            <li>
-              <Link href="/saved" className={linkCls}>
-                Saved Businesses
-              </Link>
-            </li>
-            <li>
-              <Link href="/messages" className={linkCls}>
-                Your Messages
-              </Link>
-            </li>
           </ul>
         </div>
 
@@ -170,7 +170,27 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="container pt-5 text-center text-xs text-white/50">
+      {/* Bottom row — legal links + copyright */}
+      <div className="container pt-5 flex flex-col items-center gap-3 text-xs text-white/50">
+        <ul className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+          <li>
+            <Link
+              href="/privacy"
+              className="hover:text-brand-gold transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </li>
+          <li aria-hidden="true">·</li>
+          <li>
+            <Link
+              href="/terms"
+              className="hover:text-brand-gold transition-colors"
+            >
+              Terms of Service
+            </Link>
+          </li>
+        </ul>
         <p>
           © {year} Eswatini Connect. Demonstration prototype — sample data only.
         </p>
