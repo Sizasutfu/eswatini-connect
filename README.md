@@ -17,6 +17,7 @@ A modern, full-stack business directory for discovering local businesses, servic
 - [Environment Variables](#environment-variables)
 - [Database Schema](#database-schema)
 - [Authentication](#authentication)
+- [Messaging](#messaging)
 - [Project Structure](#project-structure)
 - [Available Scripts](#available-scripts)
 - [Deployment](#deployment)
@@ -37,7 +38,7 @@ Eswatini Connect is a directory platform where visitors can:
 - **Explore** detailed business pages with contact info, services, hours, and photos
 - **Save** favourites for later
 - **Message** businesses directly through a frontend contact form
-- **List** their own business (requires a free account)
+- **List** and manage their own business (requires a free account)
 
 The platform is fully deployed and functional:
 
@@ -56,7 +57,7 @@ The platform is fully deployed and functional:
   - 8 popular category tiles with live counts
   - Swipeable carousel of featured businesses
   - "Why Eswatini Connect" value section
-  - Animated statistics strip (illustrative figures)
+  - **Live statistics** pulled from Supabase (real counts, not placeholders)
   - "List Your Business" CTA
 
 - **`/explore` — Full directory**
@@ -77,7 +78,7 @@ The platform is fully deployed and functional:
   - Operating hours
   - Contact card: phone, email, address
   - Working **Call** (`tel:`) and **WhatsApp** (`wa.me`) buttons
-  - Frontend contact form
+  - Frontend contact form (messages stored in Supabase)
   - Save / favourited state
   - Related businesses in the same category
   - Per-page metadata + JSON-LD structured data
@@ -103,17 +104,25 @@ The platform is fully deployed and functional:
   - "Clear all" action
 
 - **`/messages` — Sent messages**
-  - Locally stored contact form submissions
-  - Delete individual or clear all
+  - Messages you've sent to businesses
+  - Delete individual messages
+
+- **`/privacy` — Privacy Policy**
+  - Full policy covering data collection, third parties, user rights
+
+- **`/terms` — Terms of Service**
+  - Full terms covering acceptable use, liability, governing law
 
 ### Authenticated features
 
-- **`/auth/sign-up`** — Create an account (email + password)
+- **`/auth/sign-up`** — Create an account (email + password, requires terms acceptance)
 - **`/auth/sign-in`** — Sign in
 - **`/auth/callback`** — Email confirmation handler
-- **`/my-businesses`** — Manage your submissions
+- **`/my-businesses`** — Manage your submissions with two tabs:
+  - **My Listings** — view, edit, delete your businesses
+  - **Inbox** — read messages customers have sent to your businesses
 - **Protected submission flow** — Only signed-in users can list a business
-- **User menu** — Avatar with dropdown: My Businesses, Saved, Sign out
+- **User menu** — Avatar with dropdown: My Businesses, Saved, Your Messages, Sign out
 
 ### Cross-cutting features
 
@@ -121,6 +130,7 @@ The platform is fully deployed and functional:
 - **Responsive** — Mobile-first layout, hamburger nav, swipeable carousel
 - **SEO** — Sitemap, robots.txt, canonical URLs, Open Graph, Twitter Cards, JSON-LD
 - **Accessibility** — Semantic HTML, keyboard navigation, ARIA labels, focus management, reduced-motion support
+- **Favicon** — Custom SVG logo served automatically via Next.js App Router
 
 ---
 
@@ -135,7 +145,7 @@ The platform is fully deployed and functional:
 | Fonts | Inter (via `next/font`) |
 | Database | [Supabase](https://supabase.com/) (Postgres) |
 | Auth | Supabase Auth (email + password) |
-| File Storage | *(planned — Supabase Storage)* |
+| Messaging | Supabase `messages` table with RLS |
 | Maps | [Leaflet](https://leafletjs.com/) + OpenStreetMap tiles |
 | Theme | [next-themes](https://github.com/pacocoursey/next-themes) |
 | State | React Context (Auth, Business, Favourites) |
@@ -216,7 +226,6 @@ Create `.env.local` at the project root:
 ```env
 # ---------- Site ----------
 # Base URL used for sitemap, robots.txt, canonical links, OG tags.
-# In development, the code falls back to http://localhost:3001 automatically.
 NEXT_PUBLIC_SITE_URL=https://eswatini-connect.circlenet.social
 
 # ---------- Supabase ----------
@@ -233,8 +242,7 @@ SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIs...
 
 **Important:**
 - `.env.local` is gitignored by default
-- On Vercel, set all four in **Settings → Environment Variables**
-- All three `NEXT_PUBLIC_*` vars must be set to **Config** visibility (not Secret)
+- On Vercel, set `NEXT_PUBLIC_SITE_URL` and both Supabase variables (all **Config** visibility, not Secret)
 - `SUPABASE_SERVICE_ROLE_KEY` should **not** be added to Vercel — it's only for local seeding
 
 ---
@@ -271,43 +279,104 @@ create table public.businesses (
   created_at    timestamptz default timezone('utc'::text, now()) not null
 );
 
--- Indexes
 create index businesses_category_idx on public.businesses (category);
 create index businesses_location_idx on public.businesses (location);
 create index businesses_featured_idx on public.businesses (featured) where featured = true;
 create index businesses_user_id_idx  on public.businesses (user_id);
 
--- ============================================================
--- Row Level Security
--- ============================================================
 alter table public.businesses enable row level security;
 
--- Anyone can read
 create policy "Public can read businesses"
   on public.businesses for select
-  to anon, authenticated
-  using ( true );
+  to anon, authenticated using ( true );
 
--- Signed-in users can insert — must own the row
 create policy "Authenticated users can insert businesses"
   on public.businesses for insert
-  to authenticated
-  with check ( auth.uid() = user_id );
+  to authenticated with check ( auth.uid() = user_id );
 
--- Signed-in users can update their own rows
 create policy "Users can update their own businesses"
   on public.businesses for update
   to authenticated
   using ( auth.uid() = user_id )
   with check ( auth.uid() = user_id );
 
--- Signed-in users can delete their own rows
 create policy "Users can delete their own businesses"
   on public.businesses for delete
-  to authenticated
-  using ( auth.uid() = user_id );
+  to authenticated using ( auth.uid() = user_id );
 
--- Refresh PostgREST schema cache
+-- ============================================================
+-- messages table
+-- ============================================================
+create table public.messages (
+  id           bigint primary key generated always as identity,
+  business_id  bigint references public.businesses(id) on delete cascade,
+  sender_id    uuid references auth.users(id) on delete set null,
+  sender_name  text not null,
+  sender_email text not null,
+  sender_phone text,
+  body         text not null,
+  read_at      timestamptz,
+  created_at   timestamptz default timezone('utc'::text, now()) not null
+);
+
+create index messages_business_id_idx on public.messages (business_id);
+create index messages_sender_id_idx   on public.messages (sender_id);
+create index messages_created_at_idx  on public.messages (created_at desc);
+
+alter table public.messages enable row level security;
+
+create policy "Senders can read their sent messages"
+  on public.messages for select
+  to authenticated using ( auth.uid() = sender_id );
+
+create policy "Owners can read messages for their businesses"
+  on public.messages for select
+  to authenticated
+  using (
+    exists (
+      select 1 from public.businesses b
+      where b.id = messages.business_id
+        and b.user_id = auth.uid()
+    )
+  );
+
+create policy "Authenticated users can send messages"
+  on public.messages for insert
+  to authenticated with check ( auth.uid() = sender_id );
+
+create policy "Owners can mark messages as read"
+  on public.messages for update
+  to authenticated
+  using (
+    exists (
+      select 1 from public.businesses b
+      where b.id = messages.business_id
+        and b.user_id = auth.uid()
+    )
+  )
+  with check (
+    exists (
+      select 1 from public.businesses b
+      where b.id = messages.business_id
+        and b.user_id = auth.uid()
+    )
+  );
+
+create policy "Senders can delete their sent messages"
+  on public.messages for delete
+  to authenticated using ( auth.uid() = sender_id );
+
+create policy "Owners can delete messages for their businesses"
+  on public.messages for delete
+  to authenticated
+  using (
+    exists (
+      select 1 from public.businesses b
+      where b.id = messages.business_id
+        and b.user_id = auth.uid()
+    )
+  );
+
 notify pgrst, 'reload schema';
 ```
 
@@ -319,8 +388,8 @@ Authentication uses **Supabase Auth** with email + password.
 
 ### Flow
 
-1. User visits `/auth/sign-up`, enters email + password
-2. Supabase creates a user record
+1. User visits `/auth/sign-up`, enters email + password, and accepts the Terms of Service and Privacy Policy
+2. Supabase creates a user record with `terms_accepted_at` and version metadata
 3. If email confirmation is **off** (recommended for dev), user is signed in immediately
 4. If email confirmation is **on**, a confirmation link is sent and the user is redirected to `/auth/callback`
 5. On sign-in, Supabase sets secure cookies
@@ -350,6 +419,24 @@ http://localhost:3001/**
 
 ---
 
+## Messaging
+
+Messages flow through Supabase with row-level security enforcing access:
+
+- **Senders** see messages they've sent (via `/messages`)
+- **Business owners** see messages received for their listings (via `/my-businesses` → **Inbox** tab)
+- Neither party can see the other's inbox — enforced at the database level
+
+### Owner inbox features
+
+- Unread count with **gold dot** indicator
+- **Mark read** action per message
+- **All / Unread** filter toggle
+- **Delete** messages
+- Direct reply via `mailto:` and `call:` links
+
+---
+
 ## Project Structure
 
 ```
@@ -358,8 +445,10 @@ eswatini-connect/
 │   ├── layout.tsx                     # Root: providers, header, footer
 │   ├── page.tsx                       # Homepage
 │   ├── globals.css                    # Tailwind + brand styles + Leaflet overrides
-│   ├── sitemap.ts                     # Auto /sitemap.xml
+│   ├── sitemap.ts                     # Auto /sitemap.xml (reads from Supabase)
 │   ├── robots.ts                      # Auto /robots.txt
+│   ├── icon.svg                       # Favicon (auto-served by Next.js)
+│   ├── favicon.ico                    # Legacy favicon fallback
 │   ├── auth/
 │   │   ├── sign-in/page.tsx
 │   │   ├── sign-up/page.tsx
@@ -377,7 +466,9 @@ eswatini-connect/
 │   │       └── not-found.tsx
 │   ├── saved/page.tsx
 │   ├── messages/page.tsx
-│   └── my-businesses/page.tsx
+│   ├── my-businesses/page.tsx         # Tabs: Listings + Inbox
+│   ├── privacy/page.tsx
+│   └── terms/page.tsx
 ├── components/
 │   ├── Header.tsx
 │   ├── UserMenu.tsx
@@ -392,22 +483,28 @@ eswatini-connect/
 │   ├── ExploreResults.tsx
 │   ├── BusinessCard.tsx
 │   ├── BusinessDetail.tsx
+│   ├── BusinessFormFields.tsx          # Shared create/edit form fields
 │   ├── BusinessImage.tsx               # next/image wrapper with fallback
 │   ├── BusinessGallery.tsx             # Photo grid + lightbox
 │   ├── FavouriteButton.tsx
 │   ├── SavedBusinesses.tsx
 │   ├── MessagesList.tsx
+│   ├── OwnerInbox.tsx                  # Received messages
+│   ├── MyBusinessesTabs.tsx            # Listings / Inbox tab switcher
+│   ├── MyBusinesses.tsx                # My listings with edit/delete
+│   ├── EditBusinessModal.tsx
+│   ├── DeleteBusinessModal.tsx
 │   ├── ContactForm.tsx
 │   ├── Highlight.tsx                   # <mark> wrapper for search terms
 │   ├── AuthForm.tsx
-│   ├── MyBusinesses.tsx
 │   ├── BusinessMap.tsx                 # Leaflet map (client-only)
 │   ├── BusinessMapDynamic.tsx          # next/dynamic wrapper with ssr:false
 │   ├── MapView.tsx
 │   ├── ListBusinessModal.tsx
 │   ├── ListCTA.tsx
 │   ├── WhySection.tsx
-│   ├── StatsSection.tsx
+│   ├── StatsSection.tsx                # Server component (fetches live stats)
+│   ├── StatsCounter.tsx                # Client-side animated counter
 │   └── Footer.tsx
 ├── context/
 │   ├── AuthContext.tsx
@@ -421,16 +518,23 @@ eswatini-connect/
 │   ├── slugify.ts
 │   ├── types.ts
 │   ├── useDebounce.ts
+│   ├── validateBusiness.ts             # Shared draft validation
+│   ├── legal.ts                        # Terms/Privacy version tracking
 │   └── supabase/
 │       ├── client.ts                   # Browser client
 │       ├── server.ts                   # Server client (cookies)
-│       └── queries.ts                  # Business queries
+│       ├── queries.ts                  # Business queries
+│       ├── messages.ts                 # Message helpers
+│       └── stats.ts                    # Platform stats
 ├── scripts/
 │   └── seed-businesses.ts              # One-off seed utility
+├── types/
+│   └── react-overrides.d.ts            # TS shim for 71007 warning
 ├── middleware.ts                       # Session refresh for Supabase
 ├── tailwind.config.ts
 ├── next.config.mjs
 ├── tsconfig.json
+├── .env.local.example
 └── package.json
 ```
 
@@ -470,7 +574,7 @@ Deployed on **Vercel** with **Supabase** as the backend.
 5. In Supabase → **Authentication → URL Configuration**, add the production URL and `/auth/callback`
 6. Redeploy (any change to `NEXT_PUBLIC_*` vars requires a fresh build)
 
-### After deploy — verify
+### Post-deploy verification
 
 ```bash
 # Sitemap points to your domain
@@ -479,7 +583,7 @@ curl.exe -s https://your-domain.com/sitemap.xml | Select-String "<loc>"
 # Robots.txt points to sitemap
 curl.exe -s https://your-domain.com/robots.txt
 
-# Business detail page has canonical + OG tags
+# Business page has canonical + OG tags
 curl.exe -s https://your-domain.com/business/royal-auto-care | Select-String "canonical|og:title"
 ```
 
@@ -496,14 +600,17 @@ curl.exe -s https://your-domain.com/business/royal-auto-care | Select-String "ca
   - Twitter Card tags
 - **JSON-LD structured data** — `LocalBusiness` schema on every business detail page, ready for Google rich results.
 
-### Submit to Google Search Console
+### Google Search Console
 
-1. Go to [search.google.com/search-console](https://search.google.com/search-console)
-2. Add property → URL prefix → your domain
-3. Verify (Vercel DNS is easiest — Google provides a TXT record)
-4. Once verified → **Sitemaps** → submit `sitemap.xml`
+Submitted for indexing — sitemap live at [search.google.com/search-console](https://search.google.com/search-console). Google will crawl within 24–48 hours.
 
-Google will crawl within 24–48 hours.
+To verify indexing progress:
+
+```
+site:eswatini-connect.circlenet.social
+```
+
+Paste into Google search — the number of results shows how many pages are indexed.
 
 ---
 
@@ -538,9 +645,9 @@ The `scripts/seed-businesses.ts` script inserts **8 fictional businesses** into 
 | Bloom Beauty Studio | Beauty & Wellness | Ezulwini |
 | ProEdge Consulting | Professional Services | Manzini |
 
-**All demo businesses are fictional.** Names, phone numbers, emails, and addresses are placeholders and do not represent real businesses.
+**All demo businesses are fictional.** Names, phone numbers, emails, and addresses are placeholders and do not represent real businesses. They're flagged `is_local = false` in the database.
 
-The statistics on the homepage (250+, 8+, 10+, 1,000+) are illustrative and clearly labelled as such — they are not real platform metrics.
+User-submitted businesses are flagged `is_local = true` and their contact details hide the "demo listing" disclaimer on the detail page.
 
 ---
 
@@ -548,12 +655,12 @@ The statistics on the homepage (250+, 8+, 10+, 1,000+) are illustrative and clea
 
 Ideas queued for future iterations:
 
-- [ ] **Edit / Delete** buttons on `/my-businesses`
 - [ ] **File uploads** — Supabase Storage for real business photos
 - [ ] **Moderation queue** — admin approval before submissions go live
 - [ ] **Reviews and ratings** — signed-in users can leave feedback
-- [ ] **Business claims** — verified owners
-- [ ] **Email notifications** — Supabase Edge Functions + Resend
+- [ ] **Business claims** — verified owners can claim admin-added listings
+- [ ] **Admin dashboard** — CRUD for all businesses
+- [ ] **Email notifications** — Supabase Edge Functions + Resend for new messages
 - [ ] **Multi-language support** — English / siSwati
 - [ ] **Advanced analytics** — view counts, popular searches
 - [ ] **Custom SMTP** — for higher-volume confirmation emails
