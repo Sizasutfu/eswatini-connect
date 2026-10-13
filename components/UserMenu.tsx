@@ -28,7 +28,7 @@ export default function UserMenu() {
     return (
       <Link
         href="/auth/sign-in"
-        className="btn btn-outline btn-sm hidden sm:inline-flex"
+        className="btn btn-outline btn-sm"
       >
         Sign in
       </Link>
@@ -59,7 +59,9 @@ export default function UserMenu() {
             dark:bg-night-surface dark:border-night-line"
         >
           <div className="px-4 py-3 border-b border-brand-line dark:border-night-line">
-            <p className="text-xs text-brand-muted dark:text-night-muted">Signed in as</p>
+            <p className="text-xs text-brand-muted dark:text-night-muted">
+              Signed in as
+            </p>
             <p className="text-sm font-medium text-brand-ink truncate dark:text-night-heading">
               {user.email}
             </p>
@@ -82,6 +84,15 @@ export default function UserMenu() {
               dark:text-night-text dark:hover:bg-night-elevated"
           >
             Saved Businesses
+          </Link>
+          <Link
+            href="/messages"
+            role="menuitem"
+            onClick={() => setOpen(false)}
+            className="block px-4 py-2.5 text-sm text-brand-body hover:bg-brand-greenLight transition-colors
+              dark:text-night-text dark:hover:bg-night-elevated"
+          >
+            Your Messages
           </Link>
 
           <button

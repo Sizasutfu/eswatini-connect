@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useBusiness } from "@/context/BusinessContext";
 import { useFavourites } from "@/context/FavouritesContext";
+import { useAuth } from "@/context/AuthContext";
 import ThemeToggle from "./ThemeToggle";
 import UserMenu from "./UserMenu";
 
@@ -13,6 +14,7 @@ export default function Header() {
   const pathname = usePathname();
   const { openListModal } = useBusiness();
   const { count, hydrated } = useFavourites();
+  const { user, signOut } = useAuth();
 
   const navLink =
     "block md:inline-block py-4 md:py-1.5 text-sm font-medium text-brand-body " +
@@ -49,29 +51,38 @@ export default function Header() {
       className="sticky top-0 z-[100] bg-white/92 backdrop-blur border-b border-brand-line
         dark:bg-night-bg/85 dark:border-night-line"
     >
-      <div className="container flex items-center justify-between gap-4 h-[72px]">
+      <div className="container flex items-center justify-between gap-3 h-[72px]">
+        {/* Logo */}
         <Link
           href="/"
           className="flex items-center gap-2 font-bold text-base text-brand-ink shrink-0 dark:text-night-heading"
           onClick={closeMenu}
         >
           <svg
-            viewBox="0 0 40 40" width="36" height="36"
-            aria-hidden="true" className="rounded-[10px] shrink-0"
+            viewBox="0 0 40 40"
+            width="36"
+            height="36"
+            aria-hidden="true"
+            className="rounded-[10px] shrink-0"
           >
             <rect width="40" height="40" rx="10" fill="#0b5d3b" />
             <path
-              d="M12 26 L20 12 L28 26" stroke="#d9a404" strokeWidth="2.8"
-              strokeLinecap="round" strokeLinejoin="round" fill="none"
+              d="M12 26 L20 12 L28 26"
+              stroke="#d9a404"
+              strokeWidth="2.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              fill="none"
             />
             <circle cx="20" cy="30" r="2.2" fill="#d9a404" />
           </svg>
-          <span>
+          <span className="hidden xs:inline sm:inline">
             Eswatini{" "}
             <span className="text-brand-green dark:text-brand-gold">Connect</span>
           </span>
         </Link>
 
+        {/* Desktop + Mobile nav */}
         <nav
           id="navLinks"
           aria-label="Main navigation"
@@ -117,6 +128,44 @@ export default function Header() {
             </span>
           </Link>
 
+          {/* Auth-aware mobile-only links */}
+          {user ? (
+            <>
+              <Link
+                href="/my-businesses"
+                className={`${navLink} md:hidden`}
+                onClick={closeMenu}
+              >
+                My Businesses
+              </Link>
+              <Link
+                href="/messages"
+                className={`${navLink} md:hidden`}
+                onClick={closeMenu}
+              >
+                Your Messages
+              </Link>
+              <button
+                type="button"
+                className={`${navLink} md:hidden text-red-600 dark:text-red-400`}
+                onClick={async () => {
+                  closeMenu();
+                  await signOut();
+                }}
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/auth/sign-in"
+              className={`${navLink} md:hidden`}
+              onClick={closeMenu}
+            >
+              Sign in
+            </Link>
+          )}
+
           <button
             type="button"
             className={`${navLink} border-b-0 md:border-0`}
@@ -126,7 +175,8 @@ export default function Header() {
           </button>
         </nav>
 
-        <div className="flex items-center gap-3">
+        {/* Right-side actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             aria-label="Jump to search"
             className="hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-full border border-brand-line bg-white text-brand-ink transition
@@ -135,8 +185,16 @@ export default function Header() {
               dark:hover:border-brand-gold dark:hover:text-brand-gold"
             onClick={handleSearchClick}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              aria-hidden="true"
+            >
               <circle cx="11" cy="11" r="7" />
               <path d="M21 21l-4.35-4.35" />
             </svg>
@@ -163,9 +221,21 @@ export default function Header() {
               bg-transparent border border-brand-line rounded-brand-sm
               dark:border-night-line"
           >
-            <span className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "translate-y-2 rotate-45" : ""}`} />
-            <span className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "opacity-0" : ""}`} />
-            <span className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${open ? "-translate-y-2 -rotate-45" : ""}`} />
+            <span
+              className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${
+                open ? "translate-y-2 rotate-45" : ""
+              }`}
+            />
+            <span
+              className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${
+                open ? "opacity-0" : ""
+              }`}
+            />
+            <span
+              className={`block h-0.5 bg-brand-ink dark:bg-night-heading rounded transition ${
+                open ? "-translate-y-2 -rotate-45" : ""
+              }`}
+            />
           </button>
         </div>
       </div>
