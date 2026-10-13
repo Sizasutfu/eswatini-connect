@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { createClient } from "@/lib/supabase/client";
 import type { Business } from "@/lib/types";
 import BusinessCard from "./BusinessCard";
+import EditBusinessModal from "./EditBusinessModal";
+import DeleteBusinessModal from "./DeleteBusinessModal";
 
 interface DbRow {
   id: number;
@@ -58,6 +60,9 @@ export default function MyBusinesses() {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [editing, setEditing] = useState<Business | null>(null);
+  const [deleting, setDeleting] = useState<Business | null>(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -157,10 +162,81 @@ export default function MyBusinesses() {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {businesses.map((b) => (
-        <BusinessCard key={b.id} business={b} />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {businesses.map((b) => (
+          <div key={b.id} className="flex flex-col">
+            <BusinessCard business={b} />
+            <div className="flex gap-2 mt-3">
+              <button
+                type="button"
+                onClick={() => setEditing(b)}
+                className="btn btn-outline btn-sm flex-1"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className="mr-1"
+                >
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                Edit
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeleting(b)}
+                className="btn btn-sm flex-1
+                  text-red-600 border border-red-200 bg-white
+                  hover:border-red-400 hover:bg-red-50
+                  dark:text-red-400 dark:bg-transparent dark:border-red-900/40
+                  dark:hover:border-red-700 dark:hover:bg-red-900/20"
+              >
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  className="mr-1"
+                >
+                  <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                </svg>
+                Delete
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <EditBusinessModal
+        business={editing}
+        onClose={() => setEditing(null)}
+        onSaved={(updated) =>
+          setBusinesses((prev) =>
+            prev.map((b) => (b.id === updated.id ? updated : b))
+          )
+        }
+      />
+
+      <DeleteBusinessModal
+        business={deleting}
+        onClose={() => setDeleting(null)}
+        onDeleted={(id) =>
+          setBusinesses((prev) => prev.filter((b) => b.id !== id))
+        }
+      />
+    </>
   );
 }

@@ -10,8 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import type { Business, SubmissionDraft } from "@/lib/types";
-import { CATEGORIES } from "@/lib/data";
-import { getTownCenter } from "@/lib/data";
+import { CATEGORIES, getTownCenter } from "@/lib/data";
 import { slugify } from "@/lib/slugify";
 import { createClient } from "@/lib/supabase/client";
 
@@ -20,6 +19,7 @@ interface Ctx {
   filtered: Business[];
   categoryCounts: Record<string, number>;
   isLoading: boolean;
+  error: string | null;
 
   keyword: string;
   category: string;
@@ -35,6 +35,8 @@ interface Ctx {
   closeListModal: () => void;
 
   addSubmission: (draft: SubmissionDraft) => Promise<void>;
+  updateBusiness: (id: string, draft: SubmissionDraft) => Promise<Business>;
+  deleteBusiness: (id: string) => Promise<void>;
 }
 
 const BusinessCtx = createContext<Ctx | null>(null);
@@ -88,6 +90,7 @@ function rowToBusiness(r: DbRow): Business {
 export function BusinessProvider({ children }: { children: ReactNode }) {
   const [businesses, setBusinesses] = useState<Business[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [keyword, setKeyword] = useState("");
   const [category, setCategory] = useState("all");
@@ -100,7 +103,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     (async () => {
-      const { data, error } = await supabase
+      const { data, error: fetchError } = await supabase
         .from("businesses")
         .select("*")
         .order("featured", { ascending: false })
@@ -108,8 +111,9 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
 
       if (cancelled) return;
 
-      if (error) {
-        console.error("Failed to load businesses:", error);
+      if (fetchError) {
+        console.error("Failed to load businesses:", fetchError);
+        setError("Could not load businesses.");
         setBusinesses([]);
       } else {
         setBusinesses((data as DbRow[]).map(rowToBusiness));
@@ -122,7 +126,7 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  /* ---- Filtering (unchanged from before) ---- */
+  /* ---- Filtering ---- */
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase();
     return businesses.filter((b) => {
@@ -164,62 +168,142 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
   const openListModal = useCallback(() => setListModalOpen(true), []);
   const closeListModal = useCallback(() => setListModalOpen(false), []);
 
-  /* ---- Submissions: write to Supabase ---- */
+  /* ---- Create ---- */
   const addSubmission = useCallback(async (draft: SubmissionDraft) => {
-  const fallback = getTownCenter(draft.location);
-  const supabase = createClient();
+    const fallback = getTownCenter(draft.location);
+    const supabase = createClient();
 
-  // Get the signed-in user's id — RLS requires user_id to match auth.uid()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("You must be signed in to submit a business.");
-  }
+    if (!user) {
+      throw new Error("You must be signed in to submit a business.");
+    }
 
-  const payload = {
-    slug: slugify(draft.name),
-    name: draft.name,
-    category: draft.category,
-    location: draft.location,
-    lat: fallback.lat,
-    lng: fallback.lng,
-    short_desc: draft.description.slice(0, 110),
-    description: draft.description,
-    image:
-      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
-    gallery: [],
-    featured: false,
-    phone: draft.phone,
-    whatsapp: draft.whatsapp,
-    email: draft.email,
-    address: draft.address || "—",
-    hours: "Contact business for hours",
-    services: "General services",
-    is_local: true,
-    user_id: user.id,
-  };
+    const payload = {
+      slug: slugify(draft.name),
+      name: draft.name,
+      category: draft.category,
+      location: draft.location,
+      lat: fallback.lat,
+      lng: fallback.lng,
+      short_desc: draft.description.slice(0, 110),
+      description: draft.description,
+      image:
+        draft.image.trim() ||
+        "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+      gallery: draft.image.trim() ? [draft.image.trim()] : [],
+      featured: false,
+      phone: draft.phone,
+      whatsapp: draft.whatsapp,
+      email: draft.email,
+      address: draft.address || "—",
+      hours: draft.hours.trim() || "Contact business for hours",
+      services: draft.services.trim() || "General services",
+      is_local: true,
+      user_id: user.id,
+    };
 
-  const { data, error: insertError } = await supabase
-    .from("businesses")
-    .insert(payload)
-    .select()
-    .single();
+    const { data, error: insertError } = await supabase
+      .from("businesses")
+      .insert(payload)
+      .select()
+      .single();
 
-  if (insertError) {
-    console.error("Submission failed:", insertError);
-    throw insertError;
-  }
+    if (insertError) {
+      console.error("Submission failed:", insertError);
+      throw insertError;
+    }
 
-  setBusinesses((prev) => [rowToBusiness(data as DbRow), ...prev]);
-}, []);
+    setBusinesses((prev) => [rowToBusiness(data as DbRow), ...prev]);
+  }, []);
+
+  /* ---- Update ---- */
+  const updateBusiness = useCallback(
+    async (id: string, draft: SubmissionDraft): Promise<Business> => {
+      const fallback = getTownCenter(draft.location);
+      const supabase = createClient();
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error("You must be signed in to edit a business.");
+      }
+
+      const payload = {
+        // Deliberately not updating `slug` — keeps URLs stable.
+        name: draft.name,
+        category: draft.category,
+        location: draft.location,
+        lat: fallback.lat,
+        lng: fallback.lng,
+        short_desc: draft.description.slice(0, 110),
+        description: draft.description,
+        image:
+          draft.image.trim() ||
+          "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+        gallery: draft.image.trim() ? [draft.image.trim()] : [],
+        phone: draft.phone,
+        whatsapp: draft.whatsapp,
+        email: draft.email,
+        address: draft.address || "—",
+        hours: draft.hours.trim() || "Contact business for hours",
+        services: draft.services.trim() || "General services",
+      };
+
+      const { data, error: updateError } = await supabase
+        .from("businesses")
+        .update(payload)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (updateError) {
+        console.error("Update failed:", updateError);
+        throw updateError;
+      }
+
+      const updated = rowToBusiness(data as DbRow);
+      setBusinesses((prev) => prev.map((b) => (b.id === id ? updated : b)));
+      return updated;
+    },
+    []
+  );
+
+  /* ---- Delete ---- */
+  const deleteBusiness = useCallback(async (id: string): Promise<void> => {
+    const supabase = createClient();
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      throw new Error("You must be signed in to delete a business.");
+    }
+
+    const { error: deleteError } = await supabase
+      .from("businesses")
+      .delete()
+      .eq("id", id);
+
+    if (deleteError) {
+      console.error("Delete failed:", deleteError);
+      throw deleteError;
+    }
+
+    setBusinesses((prev) => prev.filter((b) => b.id !== id));
+  }, []);
 
   const value: Ctx = {
     businesses,
     filtered,
     categoryCounts,
     isLoading,
+    error,
     keyword,
     category,
     location,
@@ -232,6 +316,8 @@ export function BusinessProvider({ children }: { children: ReactNode }) {
     openListModal,
     closeListModal,
     addSubmission,
+    updateBusiness,
+    deleteBusiness,
   };
 
   return <BusinessCtx.Provider value={value}>{children}</BusinessCtx.Provider>;
