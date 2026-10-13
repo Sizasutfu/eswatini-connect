@@ -261,7 +261,7 @@ export default function BusinessDetail({
         </div>
 
         {/* Contact form */}
-        <ContactForm businessSlug={b.slug} businessName={b.name} />
+       <ContactForm businessId={b.id} businessName={b.name} />
 
         {/* Related */}
         {related.length > 0 && (

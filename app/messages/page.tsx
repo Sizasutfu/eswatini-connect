@@ -45,8 +45,8 @@ export default function MessagesPage() {
             Your Messages
           </h1>
           <p className="text-[1.08rem] text-brand-muted dark:text-night-muted">
-            Messages you&apos;ve sent from business pages are stored locally
-            in this browser. Nothing was sent to a server.
+            Messages you&apos;ve sent from business pages. Delivered to the
+            business and stored securely on your account.
           </p>
         </div>
 
