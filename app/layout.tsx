@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
+import { AuthProvider } from "@/context/AuthContext";
 import { BusinessProvider } from "@/context/BusinessContext";
 import { FavouritesProvider } from "@/context/FavouritesContext";
 import Header from "@/components/Header";
@@ -62,14 +63,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           enableSystem
           disableTransitionOnChange
         >
-          <BusinessProvider>
-            <FavouritesProvider>
-              <Header />
-              <main>{children}</main>
-              <Footer />
-              <ListBusinessModal />
-            </FavouritesProvider>
-          </BusinessProvider>
+          <AuthProvider>
+            <BusinessProvider>
+              <FavouritesProvider>
+                <Header />
+                <main>{children}</main>
+                <Footer />
+                <ListBusinessModal />
+              </FavouritesProvider>
+            </BusinessProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
