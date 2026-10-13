@@ -90,7 +90,7 @@ export default async function BusinessPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <BusinessDetail business={biz} related={related} />
+      <BusinessDetail business={biz} related={related} isLocal={biz.isLocal} />
     </>
   );
 }
