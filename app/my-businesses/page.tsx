@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import MyBusinesses from "@/components/MyBusinesses";
+import MyBusinessesTabs from "@/components/MyBusinessesTabs";
 
 export const metadata: Metadata = {
   title: "My Businesses",
-  description: "Businesses you've submitted to Eswatini Connect.",
+  description:
+    "Businesses you've submitted to Eswatini Connect and messages received.",
   robots: { index: false, follow: true },
 };
 
@@ -40,11 +41,11 @@ export default function MyBusinessesPage() {
             My Businesses
           </h1>
           <p className="text-[1.08rem] text-brand-muted dark:text-night-muted">
-            Listings you&apos;ve submitted to Eswatini Connect.
+            Manage your listings and read messages customers have sent you.
           </p>
         </div>
 
-        <MyBusinesses />
+        <MyBusinessesTabs />
       </div>
     </section>
   );

@@ -24,6 +24,11 @@ export interface Message {
   createdAt: string;
 }
 
+export interface InboxMessage extends Message {
+  businessName: string;
+  businessSlug: string;
+}
+
 function rowToMessage(r: MessageRow): Message {
   return {
     id: String(r.id),
@@ -72,14 +77,19 @@ export async function sendMessage(input: {
   return rowToMessage(data as MessageRow);
 }
 
-/** Fetch messages the current user has sent */
-export async function getSentMessages(): Promise<
-  (Message & { businessName: string; businessSlug: string })[]
-> {
+/** Fetch messages the current user has sent (their outbox) */
+export async function getSentMessages(): Promise<InboxMessage[]> {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
   const { data, error } = await supabase
     .from("messages")
     .select("*, businesses(name, slug)")
+    .eq("sender_id", user.id)
     .order("created_at", { ascending: false });
 
   if (error) throw error;
@@ -91,11 +101,15 @@ export async function getSentMessages(): Promise<
   }));
 }
 
-/** Fetch messages received for businesses owned by the current user */
-export async function getReceivedMessages(): Promise<
-  (Message & { businessName: string; businessSlug: string })[]
-> {
+/** Fetch messages received for businesses owned by the current user (their inbox) */
+export async function getReceivedMessages(): Promise<InboxMessage[]> {
   const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return [];
+
   const { data, error } = await supabase
     .from("messages")
     .select("*, businesses!inner(name, slug, user_id)")
@@ -103,14 +117,18 @@ export async function getReceivedMessages(): Promise<
 
   if (error) throw error;
 
-  return (data ?? []).map((r: any) => ({
-    ...rowToMessage(r),
-    businessName: r.businesses?.name ?? "Unknown",
-    businessSlug: r.businesses?.slug ?? "",
-  }));
+  // RLS returns messages I sent AND messages to businesses I own.
+  // Filter to only the latter for the owner inbox.
+  return (data ?? [])
+    .filter((r: any) => r.businesses?.user_id === user.id)
+    .map((r: any) => ({
+      ...rowToMessage(r),
+      businessName: r.businesses?.name ?? "Unknown",
+      businessSlug: r.businesses?.slug ?? "",
+    }));
 }
 
-/** Mark a message as read */
+/** Mark a message as read (only owners can — enforced by RLS) */
 export async function markMessageRead(id: string): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase
@@ -121,7 +139,7 @@ export async function markMessageRead(id: string): Promise<void> {
   if (error) throw error;
 }
 
-/** Delete a message the current user sent */
+/** Delete a message. RLS decides whether this user is allowed. */
 export async function deleteMessage(id: string): Promise<void> {
   const supabase = createClient();
   const { error } = await supabase
