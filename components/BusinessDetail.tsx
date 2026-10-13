@@ -17,29 +17,8 @@ export default function BusinessDetail({
   related = [],
   isLocal = false,
 }: Props) {
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    name: b.name,
-    description: b.description || b.shortDesc,
-    image: b.image,
-    telephone: b.phone,
-    email: b.email,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: b.address,
-      addressLocality: b.location,
-      addressCountry: "SZ",
-    },
-    openingHours: b.hours,
-  };
-
   return (
     <article className="py-8 md:py-12">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
       <div className="container max-w-[1100px]">
         {/* Breadcrumb */}
         <nav
@@ -102,7 +81,6 @@ export default function BusinessDetail({
               Your submission
             </span>
           )}
-          {/* Heart overlay on the cover, only when no "Your submission" badge */}
           {!isLocal && (
             <div className="absolute top-4 right-4 z-10">
               <FavouriteButton
@@ -121,7 +99,6 @@ export default function BusinessDetail({
               {b.category}
             </p>
 
-            {/* Title + Save button */}
             <div className="flex flex-wrap items-start gap-4 mb-4">
               <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-bold tracking-tight text-brand-ink flex-1 min-w-0 dark:text-night-heading">
                 {b.name}
