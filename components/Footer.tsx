@@ -191,9 +191,7 @@ export default function Footer() {
             </Link>
           </li>
         </ul>
-        <p>
-          © {year} Eswatini Connect. Demonstration prototype — sample data only.
-        </p>
+        <p>© {year} Eswatini Connect. All rights reserved.</p>
       </div>
     </footer>
   );
