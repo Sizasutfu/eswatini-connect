@@ -52,9 +52,15 @@ export default function BusinessDetail({
             dark:text-brand-gold dark:hover:brightness-110"
         >
           <svg
-            width="16" height="16" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-            strokeLinejoin="round" aria-hidden="true"
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
           >
             <path d="M19 12H5M12 19l-7-7 7-7" />
           </svg>
@@ -62,8 +68,10 @@ export default function BusinessDetail({
         </Link>
 
         {/* Cover */}
-        <div className="relative aspect-[16/8] md:aspect-[16/7] rounded-brand-lg overflow-hidden mb-8
-          bg-brand-soft dark:bg-night-elevated">
+        <div
+          className="relative aspect-[16/8] md:aspect-[16/7] rounded-brand-lg overflow-hidden mb-8
+            bg-brand-soft dark:bg-night-elevated"
+        >
           <BusinessImage
             src={b.image}
             alt={b.name}
@@ -99,6 +107,7 @@ export default function BusinessDetail({
               {b.category}
             </p>
 
+            {/* Title + save button */}
             <div className="flex flex-wrap items-start gap-4 mb-4">
               <h1 className="text-[1.8rem] sm:text-[2.2rem] lg:text-[2.6rem] font-bold tracking-tight text-brand-ink flex-1 min-w-0 dark:text-night-heading">
                 {b.name}
@@ -114,8 +123,13 @@ export default function BusinessDetail({
 
             <p className="flex items-center gap-2 text-sm text-brand-muted mb-6 dark:text-night-muted">
               <svg
-                width="16" height="16" viewBox="0 0 24 24" fill="none"
-                stroke="currentColor" strokeWidth="2" aria-hidden="true"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
                 className="shrink-0"
               >
                 <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 0 1 18 0z" />
@@ -158,12 +172,19 @@ export default function BusinessDetail({
               <h2 className="text-base font-semibold text-brand-ink mb-3 dark:text-night-heading">
                 Operating Hours
               </h2>
-              <div className="flex items-center gap-3 px-4 py-3 rounded-brand-md
-                bg-brand-soft dark:bg-night-elevated">
+              <div
+                className="flex items-center gap-3 px-4 py-3 rounded-brand-md
+                  bg-brand-soft dark:bg-night-elevated"
+              >
                 <svg
                   className="text-brand-green dark:text-brand-gold shrink-0"
-                  width="20" height="20" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" strokeWidth="2" aria-hidden="true"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  aria-hidden="true"
                 >
                   <circle cx="12" cy="12" r="9" />
                   <path d="M12 7v5l3 2" />
@@ -177,8 +198,10 @@ export default function BusinessDetail({
 
           {/* Contact card */}
           <aside>
-            <div className="bg-white border border-brand-line rounded-brand-lg p-6 shadow-soft lg:sticky lg:top-24
-              dark:bg-night-surface dark:border-night-line dark:shadow-card">
+            <div
+              className="bg-white border border-brand-line rounded-brand-lg p-6 shadow-soft lg:sticky lg:top-24
+                dark:bg-night-surface dark:border-night-line dark:shadow-card"
+            >
               <h2 className="text-base font-semibold text-brand-ink mb-4 dark:text-night-heading">
                 Contact Information
               </h2>
@@ -187,27 +210,41 @@ export default function BusinessDetail({
                 <li className="flex items-start gap-3">
                   <svg
                     className="text-brand-green dark:text-brand-gold shrink-0 mt-0.5"
-                    width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
                   <div>
-                    <p className="text-xs text-brand-muted mb-0.5 dark:text-night-muted">Phone</p>
-                    <p className="text-sm font-medium text-brand-ink dark:text-night-text">{b.phone}</p>
+                    <p className="text-xs text-brand-muted mb-0.5 dark:text-night-muted">
+                      Phone
+                    </p>
+                    <p className="text-sm font-medium text-brand-ink dark:text-night-text">
+                      {b.phone}
+                    </p>
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <svg
                     className="text-brand-green dark:text-brand-gold shrink-0 mt-0.5"
-                    width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
                     <rect x="2" y="4" width="20" height="16" rx="2" />
                     <path d="m2 6 10 7L22 6" />
                   </svg>
                   <div className="min-w-0">
-                    <p className="text-xs text-brand-muted mb-0.5 dark:text-night-muted">Email</p>
+                    <p className="text-xs text-brand-muted mb-0.5 dark:text-night-muted">
+                      Email
+                    </p>
                     <p className="text-sm font-medium text-brand-ink break-all dark:text-night-text">
                       {b.email}
                     </p>
@@ -216,24 +253,39 @@ export default function BusinessDetail({
                 <li className="flex items-start gap-3">
                   <svg
                     className="text-brand-green dark:text-brand-gold shrink-0 mt-0.5"
-                    width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
                     <path d="M21 10c0 7-9 12-9 12S3 17 3 10a9 9 0 0 1 18 0z" />
                     <circle cx="12" cy="10" r="3" />
                   </svg>
                   <div>
-                    <p className="text-xs text-brand-muted mb-0.5 dark:text-night-muted">Address</p>
-                    <p className="text-sm font-medium text-brand-ink dark:text-night-text">{b.address}</p>
+                    <p className="text-xs text-brand-muted mb-0.5 dark:text-night-muted">
+                      Address
+                    </p>
+                    <p className="text-sm font-medium text-brand-ink dark:text-night-text">
+                      {b.address}
+                    </p>
                   </div>
                 </li>
               </ul>
 
               <div className="flex flex-col gap-3">
-                <a className="btn btn-primary w-full" href={`tel:${b.phone.replace(/\s+/g, "")}`}>
+                <a
+                  className="btn btn-primary w-full"
+                  href={`tel:${b.phone.replace(/\s+/g, "")}`}
+                >
                   <svg
-                    width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
                   >
                     <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
                   </svg>
@@ -241,11 +293,20 @@ export default function BusinessDetail({
                 </a>
                 <a
                   className="btn btn-gold w-full"
-                  href={b.whatsapp ? `https://wa.me/${b.whatsapp.replace(/\D/g, "")}` : "#"}
+                  href={
+                    b.whatsapp
+                      ? `https://wa.me/${b.whatsapp.replace(/\D/g, "")}`
+                      : "#"
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
                     <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
                     <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652a12.02 12.02 0 0 0 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45z" />
                   </svg>
@@ -253,15 +314,17 @@ export default function BusinessDetail({
                 </a>
               </div>
 
-              <p className="text-xs text-brand-muted italic mt-4 pt-4 border-t border-brand-line dark:text-night-muted dark:border-night-line">
-                Demo listing — contact details are fictional placeholders.
-              </p>
+              {!isLocal && (
+                <p className="text-xs text-brand-muted italic mt-4 pt-4 border-t border-brand-line dark:text-night-muted dark:border-night-line">
+                  Demo listing — contact details are fictional placeholders.
+                </p>
+              )}
             </div>
           </aside>
         </div>
 
         {/* Contact form */}
-       <ContactForm businessId={b.id} businessName={b.name} />
+        <ContactForm businessId={b.id} businessName={b.name} />
 
         {/* Related */}
         {related.length > 0 && (
