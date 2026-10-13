@@ -1,6 +1,12 @@
 import type { MetadataRoute } from "next";
-import { DEMO_BUSINESSES } from "@/lib/data";
+import { createClient } from "@supabase/supabase-js";
 import { getAllCategorySlugs } from "@/lib/categoryUtils";
+
+/**
+ * Regenerate the sitemap at most once per hour.
+ * New submissions appear within an hour without a redeploy.
+ */
+export const revalidate = 3600;
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -8,7 +14,11 @@ const SITE_URL =
     ? "http://localhost:3001"
     : "https://eswatiniconnect.example");
 
-export default function sitemap(): MetadataRoute.Sitemap {
+interface SlugRow {
+  slug: string;
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -25,12 +35,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  const businessRoutes: MetadataRoute.Sitemap = DEMO_BUSINESSES.map((b) => ({
-    url: `${SITE_URL}/business/${b.slug}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
+  /* ---- Fetch businesses from Supabase ----
+     Uses a plain anon client (no cookies) so this works in a static
+     context. The `Public can read businesses` RLS policy allows reads. */
+  let businessRoutes: MetadataRoute.Sitemap = [];
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      { auth: { persistSession: false } }
+    );
+
+    const { data, error } = await supabase
+      .from("businesses")
+      .select("slug")
+      .order("created_at", { ascending: false });
+
+    if (!error && data) {
+      businessRoutes = (data as SlugRow[]).map((b) => ({
+        url: `${SITE_URL}/business/${b.slug}`,
+        lastModified: now,
+        changeFrequency: "weekly",
+        priority: 0.8,
+      }));
+    } else if (error) {
+      console.error("Sitemap: failed to fetch businesses", error);
+    }
+  } catch (err) {
+    console.error("Sitemap: unexpected error", err);
+  }
 
   return [...staticRoutes, ...categoryRoutes, ...businessRoutes];
 }
