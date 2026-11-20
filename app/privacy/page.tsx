@@ -48,8 +48,8 @@ export default function PrivacyPolicyPage() {
             </p>
 
             <p>
-              <strong>Prototype notice.</strong> Eswatini Connect is currently
-              a demonstration project. Some data practices described here apply
+              <strong>Prototype notice.</strong> Eswatini Connect is currently a
+              demonstration project. Some data practices described here apply
               only in a limited way until the platform launches publicly with
               real users.
             </p>
@@ -59,8 +59,8 @@ export default function PrivacyPolicyPage() {
               <ul>
                 <li>
                   <strong>Account information</strong> — when you sign up, we
-                  collect your email address and a securely hashed password.
-                  We never see your plain-text password.
+                  collect your email address and a securely hashed password. We
+                  never see your plain-text password.
                 </li>
                 <li>
                   <strong>Business listings</strong> — when you submit a
@@ -76,10 +76,9 @@ export default function PrivacyPolicyPage() {
                   operational purposes.
                 </li>
                 <li>
-                  <strong>Favourites and messages</strong> — businesses you
-                  save and messages you send through the contact form are
-                  stored in your browser&apos;s local storage on your own
-                  device.
+                  <strong>Favourites and messages</strong> — businesses you save
+                  and messages you send through the contact form are stored in
+                  your browser&apos;s local storage on your own device.
                 </li>
               </ul>
             </Section>
@@ -96,8 +95,8 @@ export default function PrivacyPolicyPage() {
                 <li>Comply with legal obligations</li>
               </ul>
               <p>
-                We do not sell your personal information, and we do not use
-                it for advertising networks or profiling.
+                We do not sell your personal information, and we do not use it
+                for advertising networks or profiling.
               </p>
             </Section>
 
@@ -159,8 +158,7 @@ export default function PrivacyPolicyPage() {
                 <li>
                   <strong>Local storage</strong> — used to remember your theme
                   preference (light / dark), your saved businesses, and your
-                  locally stored messages. This data never leaves your
-                  browser.
+                  locally stored messages. This data never leaves your browser.
                 </li>
               </ul>
               <p>
@@ -170,9 +168,7 @@ export default function PrivacyPolicyPage() {
             </Section>
 
             <Section title="5. Your rights">
-              <p>
-                Depending on where you live, you may have the right to:
-              </p>
+              <p>Depending on where you live, you may have the right to:</p>
               <ul>
                 <li>Access the personal information we hold about you</li>
                 <li>Correct inaccurate or incomplete information</li>
@@ -205,9 +201,8 @@ export default function PrivacyPolicyPage() {
               <p>
                 We retain your account information for as long as your account
                 is active. If you delete your account, we remove your personal
-                information within 30 days, except where we are legally
-                required to retain it longer (for example, for tax or audit
-                purposes).
+                information within 30 days, except where we are legally required
+                to retain it longer (for example, for tax or audit purposes).
               </p>
               <p>
                 Business listings you have published may remain visible in
@@ -222,7 +217,10 @@ export default function PrivacyPolicyPage() {
               </p>
               <ul>
                 <li>Encrypted connections (HTTPS) for all traffic</li>
-                <li>Passwords are hashed by Supabase Auth and never stored in plain text</li>
+                <li>
+                  Passwords are hashed by Supabase Auth and never stored in
+                  plain text
+                </li>
                 <li>
                   Row-level security in our database ensures users can only
                   access data they own
@@ -249,9 +247,9 @@ export default function PrivacyPolicyPage() {
 
             <Section title="9. Changes to this policy">
               <p>
-                We may update this Privacy Policy from time to time. When we
-                do, we will change the &ldquo;Last updated&rdquo; date at the
-                top of this page. Continued use of the platform after changes
+                We may update this Privacy Policy from time to time. When we do,
+                we will change the &ldquo;Last updated&rdquo; date at the top of
+                this page. Continued use of the platform after changes
                 constitutes acceptance of the updated policy.
               </p>
             </Section>
@@ -262,14 +260,16 @@ export default function PrivacyPolicyPage() {
                 information, contact:
               </p>
               <p className="not-prose mt-3 p-4 rounded-brand-md bg-brand-soft dark:bg-night-elevated">
-                <strong>Eswatini Connect</strong>
-                <br />
-                Call:{" "}
-                <span className="text-brand-green dark:text-brand-gold">
-                  +26879200710
-                </span>
-                <br />
-                Pigg's peak, Eswatini
+                <p className="not-prose mt-3 p-4 rounded-brand-md bg-brand-soft dark:bg-night-elevated">
+                  <strong>Eswatini Connect</strong>
+                  <br />
+                  Call:{" "}
+                  <span className="text-brand-green dark:text-brand-gold">
+                    +26879200710
+                  </span>
+                  <br />
+                  Pigg&apos;s peak, Eswatini
+                </p>
               </p>
             </Section>
 

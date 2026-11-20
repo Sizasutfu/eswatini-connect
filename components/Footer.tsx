@@ -163,9 +163,8 @@ export default function Footer() {
         <div>
           <h4 className={headingCls}>Contact us</h4>
           <ul className="flex flex-col gap-2 text-sm">
-           
             <li>+26879200710</li>
-            <li>Pigg's peak, Eswatini</li>
+            <li>Pigg&apos;s peak, Eswatini</li>
           </ul>
         </div>
       </div>
