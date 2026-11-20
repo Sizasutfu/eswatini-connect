@@ -136,7 +136,7 @@ export default function Hero() {
           <div className="relative w-full h-full min-h-[280px] sm:min-h-[340px] lg:min-h-[440px]">
             <div className="absolute rounded-brand-lg shadow-hero border-2 sm:border-4 border-white dark:border-night-surface overflow-hidden bg-brand-soft dark:bg-night-elevated w-[72%] h-[78%] top-[8%] left-0">
               <BusinessImage
-                src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80"
+                src="/file_000000006fc8820b885a6811dedb35e3.webp"
                 alt=""
                 priority
                 sizes="(max-width:820px) 70vw, 40vw"
@@ -144,7 +144,7 @@ export default function Hero() {
             </div>
             <div className="absolute rounded-brand-lg shadow-hero border-2 sm:border-4 border-white dark:border-night-surface overflow-hidden bg-brand-soft dark:bg-night-elevated w-[44%] h-[40%] top-0 right-0">
               <BusinessImage
-                src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=400&q=80"
+                src="/file_000000005d28820bb7c78e785928eb31.webp"
                 alt=""
                 priority
                 sizes="(max-width:820px) 40vw, 22vw"
@@ -152,7 +152,7 @@ export default function Hero() {
             </div>
             <div className="absolute rounded-brand-lg shadow-hero border-2 sm:border-4 border-white dark:border-night-surface overflow-hidden bg-brand-soft dark:bg-night-elevated w-[46%] h-[44%] bottom-0 right-[4%]">
               <BusinessImage
-                src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=400&q=80"
+                src="/file_00000000b698820bb8835e7fed2a37a7.webp"
                 alt=""
                 priority
                 sizes="(max-width:820px) 40vw, 22vw"
