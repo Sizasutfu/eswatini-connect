@@ -161,11 +161,11 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <h4 className={headingCls}>Contact (Placeholder)</h4>
+          <h4 className={headingCls}>Contact us</h4>
           <ul className="flex flex-col gap-2 text-sm">
-            <li>hello@eswatiniconnect.example</li>
-            <li>+268 2400 0000</li>
-            <li>Mbabane, Eswatini</li>
+           
+            <li>+26879200710</li>
+            <li>Pigg's peak, Eswatini</li>
           </ul>
         </div>
       </div>

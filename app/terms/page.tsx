@@ -246,14 +246,14 @@ export default function TermsPage() {
             <Section title="13. Contact">
               <p>For questions about these Terms, contact:</p>
               <p className="mt-3 p-4 rounded-brand-md bg-brand-soft dark:bg-night-elevated">
-                <strong>Eswatini Connect</strong>
+                 <strong>Eswatini Connect</strong>
                 <br />
-                Email:{" "}
+                Call:{" "}
                 <span className="text-brand-green dark:text-brand-gold">
-                  legal@eswatiniconnect.example
+                  +26879200710
                 </span>
                 <br />
-                Mbabane, Eswatini
+                Pigg's peak, Eswatini
               </p>
             </Section>
 
